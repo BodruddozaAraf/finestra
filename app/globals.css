@@ -1,1 +1,244 @@
 @import "tailwindcss";
+
+/* ============================================================
+   Finestra prototype 1: two-plate screenprint on white tin.
+   Black is the ink plate. Finestra Yellow is the colour plate.
+   White is the tin showing through. No fourth colour exists.
+   ============================================================ */
+
+@theme {
+  --color-ink: #000000;          /* brand black, from the guideline */
+  --color-tin: #ffffff;          /* brand white, from the guideline */
+  --color-plate: #f8be14;        /* Finestra Yellow, from the guideline */
+
+  --font-banner: var(--font-bungee), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-yellowtail), ui-serif, Georgia, serif;
+  --font-block: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-paint: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------------
+   Two plates, two readings.
+
+   Day is tin ground with ink lettering. Night is the same sign
+   under a street lamp: ink ground with yellow lettering. Only
+   the page ground flips. The yellow field never does, because a
+   painted yellow panel looks the same at midnight as at noon,
+   so anything sitting on the field gets its own local tokens
+   through .field-plate below rather than inheriting the page's.
+   ------------------------------------------------------------ */
+
+:root {
+  --ground: var(--color-tin);
+  --ink: var(--color-ink);
+  --hair: var(--color-ink);
+  --reg: var(--color-ink);         /* the plate offset behind an element */
+  --screen-dot: rgb(0 0 0 / 0.22);
+  --photo-tint-strength: 0.34;
+  --photo-bright: 1.06;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="day"]) {
+    --ground: var(--color-ink);
+    --ink: var(--color-plate);
+    --hair: var(--color-plate);
+    --reg: var(--color-tin);
+    --screen-dot: rgb(248 190 20 / 0.26);
+    --photo-tint-strength: 0.42;
+    --photo-bright: 0.86;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="night"] {
+  --ground: var(--color-ink);
+  --ink: var(--color-plate);
+  --hair: var(--color-plate);
+  --reg: var(--color-tin);
+  --screen-dot: rgb(248 190 20 / 0.26);
+  --photo-tint-strength: 0.42;
+  --photo-bright: 0.86;
+  color-scheme: dark;
+}
+
+/* The yellow field. Constant in both plates, so it re-declares the
+   local tokens its children read instead of inheriting the page's. */
+.field-plate {
+  background: var(--color-plate);
+  --ground: var(--color-plate);
+  --ink: var(--color-ink);
+  --hair: var(--color-ink);
+  --reg: var(--color-tin);
+  --screen-dot: rgb(0 0 0 / 0.24);
+  --photo-tint-strength: 0.34;
+  --photo-bright: 1.06;
+  color: var(--color-ink);
+}
+
+/* ---------- base ---------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--ink) var(--color-plate);
+}
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-block);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Browser surfaces belong to the design, not to the browser. */
+::selection {
+  background: var(--color-plate);
+  color: var(--color-ink);
+}
+
+::-webkit-scrollbar {
+  width: 13px;
+  height: 13px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-plate);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink);
+  border: 3px solid var(--color-plate);
+}
+
+:where(a, button, input, select, label, [tabindex]):focus-visible {
+  outline: 3px solid var(--hair);
+  outline-offset: 3px;
+}
+
+/* ---------- the two plates ---------- */
+
+/* Halftone screen. The subject's own texture: a printed dot screen, not
+   decorative grain. Sits on named plates only, never on the whole page. */
+@utility screen-dots-coarse {
+  background-image: radial-gradient(var(--screen-dot) 32%, transparent 33%);
+  background-size: 11px 11px;
+}
+
+/* Chevron banding, the rickshaw panel's edge. Drawn with a conic gradient so
+   it scales to any width without an image. */
+@utility chevron-band {
+  background-image: conic-gradient(
+    from 135deg at 50% 0%,
+    var(--hair) 0deg 90deg,
+    transparent 90deg 360deg
+  );
+  background-size: 22px 11px;
+  background-repeat: repeat-x;
+}
+
+/* Registration: the second plate sits slightly out of register behind the
+   first, the way a hand-pulled two-colour print does. Pressing a control
+   snaps the plates into register. One rule, every control, defined once. */
+@utility reg-plate {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 140ms var(--ease-paint),
+    box-shadow 140ms var(--ease-paint);
+  box-shadow: 5px 5px 0 0 var(--reg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reg-plate:where(:hover) {
+    transform: translate(-1px, -1px);
+    box-shadow: 7px 7px 0 0 var(--reg);
+  }
+  .reg-plate:where(:active) {
+    transform: translate(5px, 5px);
+    box-shadow: 0 0 0 0 var(--reg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reg-plate {
+    transition: none;
+  }
+  .reg-plate:where(:active) {
+    box-shadow: 0 0 0 0 var(--reg);
+  }
+}
+
+/* Photographs are screened toward the two plates so they read as printed
+   stock rather than as someone else's photography. */
+@utility printed-photo {
+  filter: grayscale(1) contrast(1.22) brightness(var(--photo-bright));
+}
+
+@utility hand {
+  font-family: var(--font-script);
+}
+
+@utility banner {
+  font-family: var(--font-banner);
+}
+
+/* ---------- the one authored moment ----------
+   The hero prints itself: the lettering lifts off the field, then the
+   portrait plate drops into place. Runs once, on load, nowhere else on the
+   page. The finished composition is the default state, so reduced motion and
+   no-JS both land on it directly. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes lift-off {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes drop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-26px) rotate(-1.4deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .paint-in > * {
+    animation: lift-off 620ms var(--ease-paint) backwards;
+  }
+  .paint-in > *:nth-child(1) {
+    animation-delay: 60ms;
+  }
+  .paint-in > *:nth-child(2) {
+    animation-delay: 190ms;
+  }
+  .paint-in > *:nth-child(3) {
+    animation-delay: 290ms;
+  }
+  .paint-in > *:nth-child(4) {
+    animation-delay: 390ms;
+  }
+
+  .portrait-drop {
+    animation: drop-in 700ms var(--ease-paint) 240ms backwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
