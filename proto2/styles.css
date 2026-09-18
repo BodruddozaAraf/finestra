@@ -1,0 +1,267 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Finestra prototype 2: a kacha bazar stall.
+
+   Ink board as the ground, chalk as every written mark, and
+   Finestra Yellow as the crate stock. Yellow is the cargo, not
+   the page.
+
+   Two disciplines hold this world together and are not
+   negotiable when extending it:
+
+   1. ONE TYPE SIZE. Every heading, label, price, control and
+      paragraph is set at --type. Rank is carried by weight,
+      case, reversal and rule. Only chalk varies in scale,
+      because chalk is drawn rather than typeset.
+
+   2. TONE IS MADE OF MARKS. Nothing is de-emphasised with
+      opacity. Use a lighter weight, a rule, or the stipple.
+   ============================================================ */
+
+@theme {
+  --color-ink: #000000; /* brand black, from the guideline */
+  --color-chalk: #ffffff; /* brand white, from the guideline */
+  --color-stock: #f8be14; /* Finestra Yellow, the crate stock */
+
+  --font-text: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-chalk: var(--font-caveat), ui-serif, Georgia, serif;
+
+  --ease-draw: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  /* The one type size. Nothing typeset departs from it. */
+  --type: 1rem;
+
+  /* The module the whole wall snaps to. */
+  --module: 13.5rem;
+
+  --board: var(--color-ink);
+  --mark: var(--color-chalk);
+  --stock: var(--color-stock);
+  --on-stock: var(--color-ink);
+  /* The stipple is the only tonal device. */
+  --stipple: rgb(255 255 255 / 0.5);
+  --photo-bright: 0.92;
+  --photo-tint: 0.3;
+  color-scheme: dark;
+}
+
+/* Daylight. The same stall with the shutters up: newsprint ground, ink
+   marks, the same yellow crates. Yellow stays the cargo in both. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-lamp="dusk"]) {
+    --board: var(--color-chalk);
+    --mark: var(--color-ink);
+    --stipple: rgb(0 0 0 / 0.5);
+    --photo-bright: 1.04;
+    --photo-tint: 0.24;
+    color-scheme: light;
+  }
+}
+
+:root[data-lamp="day"] {
+  --board: var(--color-chalk);
+  --mark: var(--color-ink);
+  --stipple: rgb(0 0 0 / 0.5);
+  --photo-bright: 1.04;
+  --photo-tint: 0.24;
+  color-scheme: light;
+}
+
+:root[data-lamp="dusk"] {
+  --board: var(--color-ink);
+  --mark: var(--color-chalk);
+  --stipple: rgb(255 255 255 / 0.5);
+  --photo-bright: 0.92;
+  --photo-tint: 0.3;
+  color-scheme: dark;
+}
+
+/* A crate. Yellow stock with ink marks, in both readings. */
+.crate-stock {
+  background: var(--color-stock);
+  color: var(--color-ink);
+  --board: var(--color-stock);
+  --mark: var(--color-ink);
+  --stipple: rgb(0 0 0 / 0.5);
+  --photo-bright: 1.04;
+  --photo-tint: 0.24;
+}
+
+/* ---------- base ---------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--mark) var(--board);
+}
+
+body {
+  background: var(--board);
+  color: var(--mark);
+  font-family: var(--font-text);
+  /* The one size, applied once at the root and never overridden. */
+  font-size: var(--type);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-stock);
+  color: var(--color-ink);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--board);
+  border-left: 1px solid var(--mark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--mark);
+}
+
+:where(a, button, input, select, label, [tabindex]):focus-visible {
+  outline: 2px solid var(--mark);
+  outline-offset: 3px;
+}
+
+/* ---------- rank without scale ---------- */
+
+/* The stencil rank: a crate's own name. Highest typeset rank on the wall. */
+@utility stencil {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* Second rank: a board heading or a column head. */
+@utility stencil-2 {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* A written number. Prices and counts. */
+@utility figure {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Running text. The floor of the ladder, and still the same size. */
+@utility note {
+  font-weight: 400;
+}
+
+/* Chalk. The one thing on the page that is drawn rather than typeset, so it
+   is the one thing allowed to change size. */
+@utility chalk {
+  font-family: var(--font-chalk);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- marks ---------- */
+
+/* The stipple. The only way a tonal field is made here, because opacity on
+   text is banned in this world. */
+@utility stipple {
+  background-image: radial-gradient(var(--stipple) 30%, transparent 31%);
+  background-size: 4px 4px;
+}
+
+/* Crate slats. The physical thing, not a decorative stripe. */
+@utility slats {
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 9px,
+    color-mix(in srgb, var(--color-ink) 22%, transparent) 9px 10px
+  );
+}
+
+/* A chalk stroke under a control. It draws on hover and focus, and thickens
+   under the press. One rule, every control on the page. */
+@utility struck {
+  position: relative;
+}
+
+.struck::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 3px;
+  background: var(--mark);
+  /* The dusty edge: the stroke is broken, the way chalk is. */
+  mask-image: repeating-linear-gradient(
+    90deg,
+    #000 0 7px,
+    transparent 7px 8px,
+    #000 8px 19px,
+    transparent 19px 20px
+  );
+  transform: scaleX(0);
+  transform-origin: left center;
+  /* Transform only. Animating height here would thrash layout. */
+  transition: transform 180ms var(--ease-draw);
+}
+
+.struck:where(:hover, :focus-visible)::after {
+  transform: scaleX(1);
+}
+
+/* Pressing leans on the chalk, so the stroke thickens. */
+.struck:where(:active)::after {
+  transform: scaleX(1) scaleY(1.9);
+}
+
+.struck:where([data-struck="true"])::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .struck::after {
+    transition: none;
+  }
+}
+
+/* Photographs are screened toward the stall's two values and tinted with the
+   stock, so they read as goods in a crate rather than as studio stock. */
+@utility goods {
+  filter: grayscale(1) contrast(1.15) brightness(var(--photo-bright));
+}
+
+/* ---------- the one authored moment ----------
+   The board is chalked in: the tagline stroke writes itself left to right,
+   once, on load. Nothing else on the page moves by itself. The written state
+   is the default, so reduced motion and a failed script both land on a
+   finished board. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes write-on {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .write-on {
+    animation: write-on 900ms var(--ease-draw) 120ms backwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "./index.css";
 
 export const metadata: Metadata = {
-  title: "Finestra",
-  description: "Finestra Bangladesh prototype workspace.",
+  title: "Finestra prototypes",
+  description: "Three design concepts for Finestra Bangladesh.",
 };
 
-export default function RootLayout({
+export default function IndexLayout({
   children,
 }: {
   children: React.ReactNode;

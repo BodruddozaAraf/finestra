@@ -1,0 +1,284 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Finestra prototype 3: the set.
+
+   Every piece is issued as a card. The page is a selector, not
+   a document: one card is held, the rest of the set stays
+   present behind it, and nothing hides behind a modal.
+
+   Three rules hold this world together:
+
+   1. A CARD IS AN OBJECT. It keeps its own colours in both
+      readings, because a printed card does not change when you
+      move the lamp. Only the surface under it changes, from a
+      binder page to a playmat.
+
+   2. YELLOW IS FOIL. It appears as tier pips, the stamped
+      wordmark, and a sheen at the card's edge that shifts with
+      the pointer. Never as a flat fill over a large area.
+
+   3. RADIUS BELONGS TO CARDS. Anything card-shaped is 10px.
+      Nothing else on the page has a radius.
+   ============================================================ */
+
+@theme {
+  --color-ink: #000000; /* brand black, from the guideline */
+  --color-stock: #ffffff; /* brand white, the card stock */
+  --color-foil: #f8be14; /* Finestra Yellow, the foil */
+
+  --font-plate: var(--font-shoulders), ui-sans-serif, system-ui, sans-serif;
+  --font-set: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-deal: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --radius-card: 10px;
+}
+
+:root {
+  /* The binder page: uncut sheet, laid flat under daylight. */
+  --surface: #f4f2ee;
+  --surface-line: rgb(0 0 0 / 0.18);
+  --on-surface: var(--color-ink);
+  /* The weave of the stock itself, not a decorative texture. */
+  --weave: rgb(0 0 0 / 0.045);
+  --lift: 0 2px 3px rgb(0 0 0 / 0.1), 0 10px 22px rgb(0 0 0 / 0.14);
+  --lift-held: 0 4px 6px rgb(0 0 0 / 0.14), 0 22px 44px rgb(0 0 0 / 0.2);
+  /* How hard the foil catches. Stronger under the lamp. */
+  --foil-strength: 0.5;
+  color-scheme: light;
+}
+
+/* The playmat. Same cards, black mat, and the foil catches harder. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mat="page"]) {
+    --surface: #0a0a0a;
+    --surface-line: rgb(255 255 255 / 0.24);
+    --on-surface: var(--color-stock);
+    --weave: rgb(255 255 255 / 0.04);
+    --lift: 0 2px 3px rgb(0 0 0 / 0.5), 0 12px 26px rgb(0 0 0 / 0.55);
+    --lift-held: 0 4px 8px rgb(0 0 0 / 0.55), 0 26px 52px rgb(0 0 0 / 0.65);
+    --foil-strength: 0.85;
+    color-scheme: dark;
+  }
+}
+
+:root[data-mat="page"] {
+  --surface: #f4f2ee;
+  --surface-line: rgb(0 0 0 / 0.18);
+  --on-surface: var(--color-ink);
+  --weave: rgb(0 0 0 / 0.045);
+  --lift: 0 2px 3px rgb(0 0 0 / 0.1), 0 10px 22px rgb(0 0 0 / 0.14);
+  --lift-held: 0 4px 6px rgb(0 0 0 / 0.14), 0 22px 44px rgb(0 0 0 / 0.2);
+  --foil-strength: 0.5;
+  color-scheme: light;
+}
+
+:root[data-mat="playmat"] {
+  --surface: #0a0a0a;
+  --surface-line: rgb(255 255 255 / 0.24);
+  --on-surface: var(--color-stock);
+  --weave: rgb(255 255 255 / 0.04);
+  --lift: 0 2px 3px rgb(0 0 0 / 0.5), 0 12px 26px rgb(0 0 0 / 0.55);
+  --lift-held: 0 4px 8px rgb(0 0 0 / 0.55), 0 26px 52px rgb(0 0 0 / 0.65);
+  --foil-strength: 0.85;
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--on-surface) var(--surface);
+}
+
+body {
+  background-color: var(--surface);
+  /* The weave of the sheet the cards are cut from. */
+  background-image:
+    repeating-linear-gradient(90deg, var(--weave) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg, var(--weave) 0 1px, transparent 1px 3px);
+  color: var(--on-surface);
+  font-family: var(--font-set);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-foil);
+  color: var(--color-ink);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--on-surface);
+  border-radius: 999px;
+  border: 4px solid var(--surface);
+}
+
+:where(a, button, input, select, label, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-foil);
+  outline-offset: 3px;
+}
+
+/* ---------- type ---------- */
+
+/* Name plates and headings. Condensed, tall, stamped. */
+@utility plate {
+  font-family: var(--font-plate);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 0.98;
+}
+
+/* Small printed labels on a card. Each one names its own data field, which is
+   what earns the capitals. */
+@utility field {
+  font-weight: 600;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Every number on a card sits on the same rails. */
+@utility stat {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* ---------- the card ---------- */
+
+/* A card keeps its own colours in both readings. It is a printed object, so
+   it does not respond to the lamp; only the surface under it does. */
+@utility card-stock {
+  background: var(--color-stock);
+  color: var(--color-ink);
+  border-radius: var(--radius-card);
+}
+
+/* Elevation is the shadow. The 1px line is the card's printed frame, which is
+   a feature of the object rather than a container hairline. */
+@utility lifted {
+  box-shadow: var(--lift);
+}
+
+@utility lifted-held {
+  box-shadow: var(--lift-held);
+}
+
+/* The foil. An edge phenomenon that shifts with viewing angle, driven by --fx
+   and --fy written straight to the element on pointer move, so it never
+   re-renders anything. */
+@utility foil {
+  position: relative;
+  isolation: isolate;
+}
+
+.foil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  /* Tight enough to read as a catch at one corner, never a wash over the
+     whole face. The default sits just off the top-left edge. */
+  background: radial-gradient(
+    62% 42% at var(--fx, 14%) var(--fy, -4%),
+    rgb(248 190 20 / calc(var(--foil-strength) * 0.62)) 0%,
+    rgb(248 190 20 / calc(var(--foil-strength) * 0.14)) 42%,
+    transparent 72%
+  );
+  mix-blend-mode: multiply;
+  opacity: 0;
+  transition: opacity 260ms var(--ease-deal);
+}
+
+.foil:where(:hover, :focus-within, [data-held="true"])::after {
+  opacity: 1;
+}
+
+/* ---------- leader lines ----------
+   Callouts run from the piece out to its label blocks, so a specification is
+   attached to the object rather than listed beneath it. */
+@utility leader {
+  position: relative;
+  padding-left: 2.25rem;
+}
+
+.leader::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.58em;
+  width: 1.6rem;
+  height: 1px;
+  background: currentColor;
+}
+
+/* ---------- motion ----------
+   One authored moment: the held card is dealt in on load and the set fans in
+   behind it. Nothing else on the page moves by itself. The dealt state is the
+   default, so reduced motion and a failed script both land on a finished
+   spread. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes deal-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px) rotate(-3.5deg) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fan-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .deal-in {
+    animation: deal-in 760ms var(--ease-deal) 80ms backwards;
+  }
+
+  .fan-in {
+    animation: fan-in 620ms var(--ease-deal) 340ms backwards;
+  }
+
+  /* Picking a card lifts it. Transform and shadow only. */
+  .pickable {
+    transition:
+      transform 220ms var(--ease-deal),
+      box-shadow 220ms var(--ease-deal);
+  }
+
+  .pickable:where(:hover) {
+    transform: translateY(-6px);
+  }
+
+  .pickable:where(:active) {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

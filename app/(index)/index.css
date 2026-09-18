@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* The index is review chrome, not a concept. It stays deliberately neutral so
+   it never reads as a fourth proposal. */
+body {
+  background: #0c0c0c;
+  color: #e6e6e6;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
