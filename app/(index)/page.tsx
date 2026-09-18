@@ -4,7 +4,7 @@ const PROTOS = [
   {
     slug: "proto-1",
     n: "1",
-    name: "Rickshaw Cinema",
+    name: "Prototype 1",
     world: "Hand-painted Dhaka rickshaw panels and cinema banner hoardings.",
     structure: "Full-width painted panels down a narrative scroll.",
     colour: "Yellow is the page.",
@@ -13,7 +13,7 @@ const PROTOS = [
   {
     slug: "proto-2",
     n: "2",
-    name: "Kacha Bazar",
+    name: "Prototype 2",
     world: "A Dhaka morning market stall, priced by hand on a chalk board.",
     structure: "One dense module grid, every word at a single type size.",
     colour: "Yellow is the goods.",
@@ -22,7 +22,7 @@ const PROTOS = [
   {
     slug: "proto-3",
     n: "3",
-    name: "The Set",
+    name: "Prototype 3",
     world: "A trading-card set. Every piece is issued as a card.",
     structure: "A selector. One card is held, the set stays open behind it.",
     colour: "Yellow is the foil.",

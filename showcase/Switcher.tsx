@@ -13,9 +13,9 @@ import { usePathname } from "next/navigation";
  */
 
 const PROTOS = [
-  { slug: "proto-1", n: "1", name: "Rickshaw Cinema" },
-  { slug: "proto-2", n: "2", name: "Kacha Bazar" },
-  { slug: "proto-3", n: "3", name: "The Set" },
+  { slug: "proto-1", n: "1", name: "Prototype 1" },
+  { slug: "proto-2", n: "2", name: "Prototype 2" },
+  { slug: "proto-3", n: "3", name: "Prototype 3" },
 ];
 
 export const BAR_HEIGHT = 46;
