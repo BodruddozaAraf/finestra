@@ -9,3 +9,6 @@ build/
 next-env.d.ts
 .impeccable/live/
 .impeccable/mocks/
+
+.vercel
+.env*

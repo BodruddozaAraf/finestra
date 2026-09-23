@@ -24,8 +24,8 @@ export function ClosingBanner() {
             Shop the shelf
           </LozengeLink>
           <p className="max-w-[34ch] text-[0.95rem] leading-relaxed">
-            Prefer to order the way you always have? Message the shop on
-            Facebook or Instagram.
+            Orders happen in a message. Find the shop on Instagram, WhatsApp,
+            or Facebook.
           </p>
         </div>
       </div>

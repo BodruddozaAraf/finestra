@@ -85,19 +85,16 @@ route board, closing banner, footer plate, and the broadside. Each is used once
 per page, and only the shelf rail appears on two routes.
 
 The **broadside** is the piece page: one sheet inside one unbroken ink keyline,
-split into the frames on the left and the buying column on the right, with a
-specification band run across the foot of the same frame. It follows the
+split into the frames on the left and the particulars column on the right, with
+a specification band run across the foot of the same frame. It follows the
 diptych's rule rather than the catalogue plate's, because a piece and its price
-are not two objects and so are not two frames. The buying column centres itself
-against the frames rather than sitting to the top of a taller pane.
+are not two objects and so are not two frames. The particulars column centres
+itself against the frames rather than sitting to the top of a taller pane, and
+ends in the handoff.
 
 The **shelf rail** is the one family deliberately repeated: the homepage runs it
 for the week's shelf and a piece page runs it for the rest of that line. It is
 one component, `components/products/PieceRail.tsx`, so the repeat cannot drift.
-
-The bag rail is pinned to the foot of the screen and belongs to the shop rather
-than to a page: `app/products/layout.tsx` holds it, so a piece put in the bag on
-the shelf is still in it on a piece page.
 
 No eyebrows anywhere. Headings carry their own weight.
 
@@ -116,7 +113,6 @@ State is a mark, never a hue, so yellow stays the brand's voice instead of
 becoming a status light.
 
 - Selected filter: a filled check box.
-- Chosen variant: ink fill with an inner keyline.
 - Chosen frame: an ink underscore under the thumb, the nav's mark reused. The
   thumb's own keyline stays solid; only the photograph inside an unchosen frame
   is held back.
@@ -160,7 +156,8 @@ palette. Prices and sizes use tabular numerals.
   the surface.
 - `lib/images.ts`: openly licensed stand-in photography, not Finestra product
   shots, including the supporting frames on a piece page.
-- Checkout is a visual endpoint. It reports honestly that it is not connected.
+- `lib/contact.ts`: the WhatsApp link is a placeholder. Instagram and Facebook
+  are the shop's real accounts.
 
 No customer counts, ratings, stock levels, delivery times, or press mentions
 appear anywhere, invented or otherwise.

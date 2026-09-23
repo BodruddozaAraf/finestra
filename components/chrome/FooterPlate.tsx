@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { FacebookLogo, InstagramLogo } from "@phosphor-icons/react/dist/ssr";
 import { Chevron } from "@/components/ui/Plate";
+import { CHANNEL_MARKS, CHANNELS } from "@/lib/contact";
 
 export function FooterPlate() {
   return (
@@ -32,21 +32,22 @@ export function FooterPlate() {
           </Link>
         </nav>
 
+        {/* The only way out of the site, so it reads lib/contact.ts rather
+            than writing its own URLs. */}
         <div className="flex flex-col items-start gap-3">
-          <a
-            href="https://www.facebook.com/FinestraBangladesh"
-            className="flex items-center gap-2 text-[0.95rem]"
-          >
-            <FacebookLogo size={22} weight="fill" />
-            Finestra Bangladesh
-          </a>
-          <a
-            href="https://www.instagram.com/finestrabangladesh"
-            className="flex items-center gap-2 text-[0.95rem]"
-          >
-            <InstagramLogo size={22} weight="fill" />
-            finestrabangladesh
-          </a>
+          {CHANNELS.map((c) => {
+            const Mark = CHANNEL_MARKS[c.id];
+            return (
+              <a
+                key={c.id}
+                href={c.href}
+                className="flex items-center gap-2 text-[0.95rem]"
+              >
+                <Mark size={22} weight="fill" />
+                {c.handle || c.name}
+              </a>
+            );
+          })}
         </div>
       </div>
 

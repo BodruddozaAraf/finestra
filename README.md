@@ -6,10 +6,13 @@ lifestyle brand. Next.js App Router, TypeScript, Tailwind CSS v4.
 ## Routes
 
 - `/` — homepage.
-- `/products` — the shelf, with line filters and the bag rail.
+- `/products` — the shelf, with line filters.
 - `/products/[id]` — one page per piece, prerendered from the placeholder
-  catalogue. Everything under `/products` shares one bag, held by
-  `app/products/layout.tsx`.
+  catalogue.
+
+The site takes no orders and no payments. Every piece page ends by handing the
+customer to the shop's inbox — Instagram, then WhatsApp, then Facebook — and
+every one of those links resolves through `lib/contact.ts`.
 
 ## Project status (2026-09-20)
 
@@ -37,8 +40,11 @@ not being developed further and nothing was deleted.
   project target before deploying `main` to production — don't ship straight
   to the showcase project.
 - Vercel CLI is not installed globally in this environment.
-- No payment processor, inventory backend, or real product/catalogue data
-  exists yet. See `PRODUCT.md` → Capabilities and Constraints.
+- **The WhatsApp link in `lib/contact.ts` is still `#`.** The client has not
+  supplied a number, so that button renders but goes nowhere. Do not deploy to
+  a live audience until it is filled in.
+- No real product or catalogue data exists yet. See `PRODUCT.md` →
+  Capabilities and Constraints.
 
 ## Docs map
 

@@ -29,8 +29,8 @@ export default async function ProductsPage({
           </h1>
           <p className="mt-4 max-w-[52ch] text-[1.02rem] leading-relaxed">
             {CATALOGUE.length} pieces across rings, bracelets, pendants, and the
-            character line. Pick a size and it goes straight to the bag at the
-            bottom of the screen.
+            character line. Open any one of them for the sizes it comes in and
+            the way to reach the shop.
           </p>
         </div>
         <Chevron />

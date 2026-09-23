@@ -1,40 +1,18 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useId, useState } from "react";
-import { Lozenge } from "@/components/ui/Lozenge";
 import { taka, type Product } from "@/lib/catalogue";
 import { PRODUCT_SHOTS } from "@/lib/images";
 
-export function ProductPlate({
-  product,
-  onAdd,
-}: {
-  product: Product;
-  onAdd: (product: Product, variant: string) => void;
-}) {
-  const groupId = useId();
-  const [variant, setVariant] = useState<string | null>(
-    product.variants.length === 1 ? product.variants[0] : null,
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [added, setAdded] = useState(false);
+/**
+ * A plate on the shelf. It shows the piece and opens it; it does not take an
+ * order. Sizes, care, and the way to the shop all live on the piece page, so
+ * the grid stays quiet enough to scan twenty-one of these on a phone.
+ */
+export function ProductPlate({ product }: { product: Product }) {
   const shot = PRODUCT_SHOTS[product.id];
 
-  function add() {
-    if (!variant) {
-      setError(`Pick a ${product.variantLabel.toLowerCase()} first.`);
-      return;
-    }
-    setError(null);
-    onAdd(product, variant);
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1600);
-  }
-
   return (
-    <article className="flex flex-col border-[3px] border-[var(--hair)] bg-[var(--ground)]">
+    <article className="flex h-full flex-col border-[3px] border-[var(--hair)] bg-[var(--ground)]">
       {/* The photo plate opens the piece, because a thumb on a phone aims at
           the picture. It goes to the same place as the name link below, so it
           is out of the tab order rather than doubling the stop; the keyboard
@@ -70,7 +48,7 @@ export function ProductPlate({
         )}
       </Link>
 
-      <div className="flex flex-1 flex-col px-4 py-4">
+      <div className="px-4 py-4">
         <div className="flex items-baseline justify-between gap-3">
           <h3 className="banner text-[0.98rem] leading-tight">
             <Link
@@ -88,71 +66,6 @@ export function ProductPlate({
         <p className="mt-1 text-[0.86rem] leading-snug opacity-70">
           {product.material}
         </p>
-
-        <fieldset className="mt-4" disabled={product.soldOut}>
-          <legend className="text-[0.78rem] uppercase tracking-[0.04em] opacity-70">
-            {product.variantLabel}
-          </legend>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {product.variants.map((v) => {
-              const id = `${groupId}-${v}`;
-              const on = variant === v;
-              return (
-                <span key={v}>
-                  <input
-                    type="radio"
-                    id={id}
-                    name={groupId}
-                    value={v}
-                    checked={on}
-                    onChange={() => {
-                      setVariant(v);
-                      setError(null);
-                    }}
-                    className="peer sr-only"
-                  />
-                  <label
-                    htmlFor={id}
-                    className={[
-                      "block cursor-pointer rounded-full border-[3px] border-[var(--hair)] px-3 py-1.5 text-[0.82rem] tabular-nums",
-                      "peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-[3px] peer-focus-visible:outline-[var(--hair)]",
-                      // Chosen is marked by fill and an inner keyline, so the
-                      // chip reads as chosen without yellow becoming a status.
-                      on
-                        ? "bg-[var(--ink)] text-[var(--ground)] shadow-[inset_0_0_0_2px_var(--ground)]"
-                        : "bg-transparent",
-                      product.soldOut ? "opacity-40" : "",
-                    ].join(" ")}
-                  >
-                    {v}
-                  </label>
-                </span>
-              );
-            })}
-          </div>
-        </fieldset>
-
-        {error && (
-          <p role="alert" className="mt-3 text-[0.84rem] font-semibold">
-            {error}
-          </p>
-        )}
-
-        <div className="mt-auto pt-5">
-          {product.soldOut ? (
-            <p className="text-[0.86rem] leading-snug opacity-70">
-              Back in stock soon. Message the shop to be told when.
-            </p>
-          ) : (
-            <Lozenge
-              tone="field"
-              onClick={add}
-              className="w-full px-4 py-3 text-[0.78rem]"
-            >
-              {added ? "Added to bag" : "Add to bag"}
-            </Lozenge>
-          )}
-        </div>
       </div>
     </article>
   );

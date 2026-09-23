@@ -3,7 +3,6 @@
 import { useMemo, useState, useTransition } from "react";
 import { Check } from "@phosphor-icons/react";
 import { ProductPlate } from "./ProductPlate";
-import { useBag } from "./BagProvider";
 import { CATALOGUE, LINES, type Line } from "@/lib/catalogue";
 
 type Filter = Line | "all";
@@ -13,7 +12,6 @@ type FilterRow = { id: Filter; label: string; note: string };
 export function Catalogue({ initialLine }: { initialLine: Filter }) {
   const [filter, setFilter] = useState<Filter>(initialLine);
   const [pending, startTransition] = useTransition();
-  const { add } = useBag();
 
   const shown = useMemo(
     () => (filter === "all" ? CATALOGUE : CATALOGUE.filter((p) => p.line === filter)),
@@ -87,7 +85,6 @@ export function Catalogue({ initialLine }: { initialLine: Filter }) {
                   <div className="space-y-2 px-4 py-4">
                     <div className="h-4 w-2/3 bg-[var(--hair)] opacity-30" />
                     <div className="h-3 w-1/3 bg-[var(--hair)] opacity-20" />
-                    <div className="h-8 w-full bg-[var(--hair)] opacity-15" />
                   </div>
                 </li>
               ))}
@@ -112,10 +109,8 @@ export function Catalogue({ initialLine }: { initialLine: Filter }) {
           ) : (
             <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {shown.map((p) => (
-                <li key={p.id} className="flex">
-                  <div className="flex w-full">
-                    <ProductPlate product={p} onAdd={add} />
-                  </div>
+                <li key={p.id}>
+                  <ProductPlate product={p} />
                 </li>
               ))}
             </ul>

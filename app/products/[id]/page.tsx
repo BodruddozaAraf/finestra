@@ -72,20 +72,16 @@ export default async function PiecePage(props: PageProps<"/products/[id]">) {
         <Chevron />
         <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-7 sm:py-16">
           <h2 className="banner max-w-[20ch] text-[1.7rem] leading-[0.98] tracking-[-0.02em] sm:text-[2.4rem]">
-            How ordering works
+            How to order
           </h2>
           <div className="mt-7 grid max-w-[80ch] gap-5 text-[1rem] leading-relaxed sm:grid-cols-2 sm:gap-10">
             <p>
-              Add the piece to the bag and the rail at the foot of the screen
-              holds it while you carry on down the shelf.
+              Nothing is bought or paid for on this site. It shows the range;
+              the order itself happens in a message to the shop.
             </p>
             <p>
-              <strong className="font-semibold">
-                Checkout is not connected in this prototype.
-              </strong>{" "}
-              On the live site this is where payment and delivery details go.
-              Until then, message the shop on Facebook or Instagram to place an
-              order.
+              Instagram, WhatsApp, or Facebook, whichever you already use. Send
+              the name of the piece and the size you want.
             </p>
           </div>
         </div>
