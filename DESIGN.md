@@ -1,7 +1,7 @@
 # Design
 
 Prototype 1 for Finestra Bangladesh. Written from the built world, not ahead of
-it. Homepage and Products only.
+it. Homepage, Products, and a page per piece.
 
 ## The world
 
@@ -80,8 +80,24 @@ Radii: everything square, with one documented exception. Chips and the primary
 lozenge are full pill, because a painted button on a rickshaw panel is a
 lozenge. There is no middle radius.
 
-Layout families, used once each: painted banner hero, horizontal shelf rail,
-framed diptych, route board, closing banner, footer plate.
+Layout families: painted banner hero, horizontal shelf rail, framed diptych,
+route board, closing banner, footer plate, and the broadside. Each is used once
+per page, and only the shelf rail appears on two routes.
+
+The **broadside** is the piece page: one sheet inside one unbroken ink keyline,
+split into the frames on the left and the buying column on the right, with a
+specification band run across the foot of the same frame. It follows the
+diptych's rule rather than the catalogue plate's, because a piece and its price
+are not two objects and so are not two frames. The buying column centres itself
+against the frames rather than sitting to the top of a taller pane.
+
+The **shelf rail** is the one family deliberately repeated: the homepage runs it
+for the week's shelf and a piece page runs it for the rest of that line. It is
+one component, `components/products/PieceRail.tsx`, so the repeat cannot drift.
+
+The bag rail is pinned to the foot of the screen and belongs to the shop rather
+than to a page: `app/products/layout.tsx` holds it, so a piece put in the bag on
+the shelf is still in it on a piece page.
 
 No eyebrows anywhere. Headings carry their own weight.
 
@@ -101,6 +117,9 @@ becoming a status light.
 
 - Selected filter: a filled check box.
 - Chosen variant: ink fill with an inner keyline.
+- Chosen frame: an ink underscore under the thumb, the nav's mark reused. The
+  thumb's own keyline stays solid; only the photograph inside an unchosen frame
+  is held back.
 - Sold out: a painted band struck across the plate.
 - Current route: an ink underscore under the nav word.
 
@@ -122,6 +141,13 @@ multiply at scope-dependent strength) so they read as printed stock rather than
 as someone else's photography. Every image resolves through `lib/images.ts`, a
 single swap point.
 
+A piece page wants more than one frame and Finestra has photographed none of
+these pieces, so the frame rail is the piece's own stand-in shot followed by two
+stand-in frames held per line in `PRODUCT_FRAMES`. Frames are matched to the
+lead shot by photograph rather than by URL, because the two are requested at
+different widths. Replacing the per-piece shots fills the rail without touching
+a component.
+
 ## Browser surfaces
 
 Selection, scrollbar track and thumb, and focus rings are themed from the
@@ -129,10 +155,11 @@ palette. Prices and sizes use tabular numerals.
 
 ## What is placeholder
 
-- `lib/catalogue.ts`: invented products, prices, variants, and availability.
-  The products page states this on the surface.
+- `lib/catalogue.ts`: invented products, prices, variants, descriptions, care
+  notes, and availability. The products page and every piece page state this on
+  the surface.
 - `lib/images.ts`: openly licensed stand-in photography, not Finestra product
-  shots.
+  shots, including the supporting frames on a piece page.
 - Checkout is a visual endpoint. It reports honestly that it is not connected.
 
 No customer counts, ratings, stock levels, delivery times, or press mentions

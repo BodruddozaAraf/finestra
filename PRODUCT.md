@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Next.js (App Router) with TypeScript and Tailwind CSS v4, chosen by the user. Three parallel prototypes live on branches `prototype-1`, `prototype-2`, `prototype-3`, each branched from `main`. Each prototype ships a Homepage and a Products page only. No deploy target specified.
+Next.js (App Router) with TypeScript and Tailwind CSS v4, chosen by the user. Three parallel prototypes were built on branches `prototype-1`, `prototype-2`, `prototype-3`, each branched from `main`; the client approved Prototype 1 (Rickshaw Cinema), and `main` now holds that app directly. See `README.md` for current branch status. Ships a Homepage, a Products page, and a page per piece. No deploy target confirmed yet — see `README.md` loose ends before deploying.
 
 ## Users
 
@@ -31,7 +31,7 @@ Fully online. Facebook ("Finestra Bangladesh") and Instagram ("finestrabanglades
 - Current product lines: rings, bracelets, pendants, anime accessories.
 - Stated expansion direction: wallets, belts, and other everyday men's essentials, plus further fan based and interest driven collections.
 - The Products page is built as a full e commerce interface: variant selection, add to bag, bag state, and a checkout entry point. This is a prototype of intended capability, not of a live system. No payment processor, inventory service, or order backend exists. Checkout is a visual endpoint only.
-- Scope per prototype is two routes: Homepage and Products. No product detail route, no account, no CMS.
+- Scope was two routes per prototype, Homepage and Products. After the client approved Prototype 1, the user asked for a product detail page, so `main` now also carries a page per piece at `/products/[id]`, prerendered from the placeholder catalogue. Still no account and no CMS.
 - Undecided: real SKU list, real prices, shipping and returns policy, delivery coverage, payment methods.
 
 ## Brand Commitments

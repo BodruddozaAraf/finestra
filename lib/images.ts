@@ -13,6 +13,12 @@ function shot(slug: string, w = 1100) {
   return `${CDN}${slug}?auto=format&fit=crop&w=${w}&q=72`;
 }
 
+/**
+ * The photograph behind a URL, independent of the width it was asked for, so
+ * the same picture requested at two sizes still counts as one picture.
+ */
+export const frameId = (src: string) => src.slice(CDN.length).split("?")[0];
+
 export const HERO_PORTRAIT = {
   src: shot("photo-1762505465234-de8b802614d9", 900),
   alt: "A man in a black t-shirt wearing a heavy chain and a matching bracelet.",
@@ -119,4 +125,45 @@ export const PRODUCT_SHOTS: Record<string, { src: string; alt: string }> = {
     src: shot("photo-1765708180211-a6e6bf7f7818", 700),
     alt: "A seated anime action figure on a plain surface.",
   },
+};
+
+/**
+ * Supporting frames for a piece page, keyed by line.
+ *
+ * Finestra has photographed none of these pieces for this prototype, so a
+ * piece page cannot have a real second and third angle. Rather than invent
+ * one, each line carries two openly licensed stand-in frames that show the
+ * category worn and on the bench. They are drawn from the same set of
+ * photographs above, so there is still exactly one swap point: replace these
+ * with the real per-piece shots and the frame rail fills itself.
+ */
+export const PRODUCT_FRAMES: Record<string, { src: string; alt: string }[]> = {
+  rings: [
+    EDITORIAL.bench,
+    {
+      src: shot("photo-1770253886415-f558a599c97c", 900),
+      alt: "A tattooed hand wearing a broad ring.",
+    },
+  ],
+  bracelets: [
+    {
+      src: shot("photo-1564349446548-5f0f93728b6f", 900),
+      alt: "A stack of woven cord bracelets on a wrist.",
+    },
+    EDITORIAL.classic,
+  ],
+  pendants: [
+    {
+      src: shot("photo-1678869520767-6ecd4bc729fe", 900),
+      alt: "A man in a black shirt wearing a heavy gold-toned chain.",
+    },
+    HERO_PORTRAIT,
+  ],
+  anime: [
+    EDITORIAL.character,
+    {
+      src: shot("photo-1741980983756-2f185f15e480", 900),
+      alt: "An anime character charm propped on a small stand.",
+    },
+  ],
 };

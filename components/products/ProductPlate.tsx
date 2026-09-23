@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useId, useState } from "react";
 import { Lozenge } from "@/components/ui/Lozenge";
 import { taka, type Product } from "@/lib/catalogue";
@@ -34,7 +35,15 @@ export function ProductPlate({
 
   return (
     <article className="flex flex-col border-[3px] border-[var(--hair)] bg-[var(--ground)]">
-      <div className="relative aspect-4/5 overflow-hidden border-b-[3px] border-[var(--hair)] bg-[var(--color-ink)]">
+      {/* The photo plate opens the piece, because a thumb on a phone aims at
+          the picture. It goes to the same place as the name link below, so it
+          is out of the tab order rather than doubling the stop; the keyboard
+          route to the piece is the name. */}
+      <Link
+        href={`/products/${product.id}`}
+        tabIndex={-1}
+        className="relative block aspect-4/5 overflow-hidden border-b-[3px] border-[var(--hair)] bg-[var(--color-ink)]"
+      >
         <Image
           src={shot.src}
           alt={shot.alt}
@@ -59,12 +68,17 @@ export function ProductPlate({
             </p>
           </div>
         )}
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col px-4 py-4">
         <div className="flex items-baseline justify-between gap-3">
           <h3 className="banner text-[0.98rem] leading-tight">
-            {product.name}
+            <Link
+              href={`/products/${product.id}`}
+              className="underline decoration-[3px] underline-offset-[5px]"
+            >
+              {product.name}
+            </Link>
           </h3>
           <p className="shrink-0 text-[0.98rem] tabular-nums">
             {taka(product.price)}
