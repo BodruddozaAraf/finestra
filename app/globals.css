@@ -231,6 +231,26 @@ body {
   .portrait-drop {
     animation: drop-in 700ms var(--ease-paint) 240ms backwards;
   }
+
+  /* The chevron band as a running print feed: the same tile, crawling by
+     exactly one repeat so the loop never seams. Ambient only — it never
+     touches a plate or a letterform, so it reads as texture, not as a
+     second authored moment. */
+  @keyframes chevron-crawl {
+    from {
+      background-position-x: 0;
+    }
+    to {
+      background-position-x: -22px;
+    }
+  }
+
+  .chevron-band {
+    /* Reversed direction. The footer's band is rotated 180deg, so this local
+       reversal flips its on-screen direction too — every band ends up going
+       the opposite of what it was before, footer included. */
+    animation: chevron-crawl 1s linear infinite reverse;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
