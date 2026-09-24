@@ -121,14 +121,32 @@ becoming a status light.
 
 ## Motion
 
-One authored moment: the hero prints itself on load. Lettering lifts off the
-field in sequence, then the portrait plate drops into place. It runs once and
-nowhere else on the page.
+The hero prints itself on load: lettering lifts off the field in sequence,
+then the portrait plate drops into place. It still runs once, only there,
+written in CSS rather than driven from JavaScript, so reduced motion and a
+failed script both land on the finished page rather than on an empty one.
 
-The finished composition is the default state, written in CSS rather than
-driven from JavaScript, so reduced motion and a failed script both land on the
-finished page rather than on an empty one. Registration snap is the only other
-movement, and it answers a press.
+Two things move continuously, both texture rather than a second authored
+moment:
+
+- **The chevron band** — nav, footer, and closing banner all read the one
+  shared `chevron-band` utility — crawls sideways at a steady pace, reversed
+  in direction from its first pass. It never touches a plate or a letterform,
+  so it reads as the print feed running, not as a second hero.
+- **The shelf rail** creeps sideways on its own, always. The piece list
+  renders twice in the markup (second copy hidden from assistive tech) so the
+  loop wraps from the second run onto the first with nothing to see. It holds
+  still only while a visitor is actually pressing and dragging it — hovering
+  never stops it — and can be dragged either direction, mouse or touch.
+
+Registration snap is the one interaction-driven movement: it answers a press,
+same as always.
+
+`prefers-reduced-motion: reduce` turns all three off — the hero print-in, the
+chevron crawl, and the rail's creep-and-drag system are each gated behind the
+same media query in CSS or JavaScript, so none of them run. The rail still
+scrolls by hand under reduced motion (trackpad, touch, scrollbar), just
+without the auto-creep or the custom drag.
 
 ## Photography
 

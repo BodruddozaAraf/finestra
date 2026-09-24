@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Next.js (App Router) with TypeScript and Tailwind CSS v4, chosen by the user. Three parallel prototypes were built on branches `prototype-1`, `prototype-2`, `prototype-3`, each branched from `main`; the client approved Prototype 1 (Rickshaw Cinema), and `main` now holds that app directly. See `README.md` for current branch status. Ships a Homepage, a Products page, and a page per piece. No deploy target confirmed yet — see `README.md` loose ends before deploying.
+Next.js (App Router) with TypeScript and Tailwind CSS v4, chosen by the user. Three parallel prototypes were built on branches `prototype-1`, `prototype-2`, `prototype-3`, each branched from `main`; the client approved Prototype 1 (Rickshaw Cinema), and `main` now holds that app directly. See `README.md` for current branch status. Ships a Homepage, a Products page, and a page per piece. Deployed to the `finestra` Vercel project, live for client review only — see `README.md` for the deployment note and the loose ends before pointing a real audience at it.
 
 ## Users
 

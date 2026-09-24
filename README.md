@@ -32,17 +32,21 @@ launch.
 (locally, and `showcase` also on GitHub) as history/reference only. They are
 not being developed further and nothing was deleted.
 
+### Deployment
+
+`main` deploys to the `finestra` Vercel project (re-linked 2026-09-24 — the
+original `finestra-showcase` project, used for the three-concept client
+review, had since been deleted). Vercel's GitHub integration auto-deploys
+every push to production, currently live at
+https://finestra-tan.vercel.app. That URL is for the client only; it is not
+yet meant for the customer base — see the loose ends below before pointing
+the real audience at it.
+
 ### Loose ends before going live
 
-- The `.vercel/project.json` in this working tree still points at the old
-  `finestra-showcase` Vercel project, linked back when the multi-concept
-  `showcase` app was deployed for client review. Re-link/verify the Vercel
-  project target before deploying `main` to production — don't ship straight
-  to the showcase project.
-- Vercel CLI is not installed globally in this environment.
 - **The WhatsApp link in `lib/contact.ts` is still `#`.** The client has not
-  supplied a number, so that button renders but goes nowhere. Do not deploy to
-  a live audience until it is filled in.
+  supplied a number, so that button renders but goes nowhere. Do not point a
+  live audience at the site until it is filled in.
 - No real product or catalogue data exists yet. See `PRODUCT.md` →
   Capabilities and Constraints.
 
