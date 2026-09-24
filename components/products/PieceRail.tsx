@@ -120,12 +120,28 @@ export function PieceRail({
 
     function endHold(e: PointerEvent) {
       if (pointerId === null || e.pointerId !== pointerId) return;
+      release();
+    }
+
+    function release() {
       pointerId = null;
       clearTimeout(resumeTimer);
       resumeTimer = setTimeout(() => {
         holding = false;
         last = performance.now();
       }, RESUME_DELAY);
+    }
+
+    // Mobile WebKit doesn't reliably deliver pointerup/pointercancel to this
+    // element once a touch that started here gets handed off to the page's
+    // own vertical scroll — a visitor swiping the page down past the rail
+    // routinely starts that swipe with a finger on it. Left unguarded,
+    // `holding` gets stuck true from the very first scroll and the rail never
+    // visibly moves again. The plain Touch Events (older, steadier on iOS
+    // than Pointer Events for this exact handoff) are a redundant release
+    // signal that doesn't depend on the pointer id matching.
+    function releaseOnTouchEnd() {
+      if (pointerId !== null) release();
     }
 
     // A drag that ended past the tap threshold shouldn't also fire the
@@ -142,6 +158,8 @@ export function PieceRail({
     rail.addEventListener("pointermove", onPointerMove);
     rail.addEventListener("pointerup", endHold);
     rail.addEventListener("pointercancel", endHold);
+    rail.addEventListener("touchend", releaseOnTouchEnd);
+    rail.addEventListener("touchcancel", releaseOnTouchEnd);
     rail.addEventListener("click", suppressClickAfterDrag, true);
 
     last = performance.now();
@@ -154,6 +172,8 @@ export function PieceRail({
       rail.removeEventListener("pointermove", onPointerMove);
       rail.removeEventListener("pointerup", endHold);
       rail.removeEventListener("pointercancel", endHold);
+      rail.removeEventListener("touchend", releaseOnTouchEnd);
+      rail.removeEventListener("touchcancel", releaseOnTouchEnd);
       rail.removeEventListener("click", suppressClickAfterDrag, true);
     };
   }, [pieces]);
