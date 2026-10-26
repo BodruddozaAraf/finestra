@@ -2,11 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "picsum.photos" },
-      { protocol: "https", hostname: "fastly.picsum.photos" },
-    ],
+    // Sanity and Unsplash resize on their own CDNs; see lib/image-loader.ts.
+    loader: "custom",
+    loaderFile: "./lib/image-loader.ts",
   },
 };
 

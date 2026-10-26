@@ -7,8 +7,9 @@ lifestyle brand. Next.js App Router, TypeScript, Tailwind CSS v4.
 
 - `/` — homepage.
 - `/products` — the shelf, with line filters.
-- `/products/[id]` — one page per piece, prerendered from the placeholder
-  catalogue.
+- `/products/[id]` — one page per piece, prerendered from the catalogue in
+  Sanity.
+- `/api/revalidate` — Sanity's publish webhook; refreshes cached pages.
 
 The site takes no orders and no payments. Every piece page ends by handing the
 customer to the shop's inbox — Instagram, then WhatsApp, then Facebook — and
@@ -49,6 +50,9 @@ the real audience at it.
   live audience at the site until it is filled in.
 - No real product or catalogue data exists yet. See `PRODUCT.md` →
   Capabilities and Constraints.
+- The catalogue is moving into Sanity on the `sanity-backend` branch. Until
+  that branch's setup is finished, `main` still serves the hard-coded
+  placeholder catalogue. See `docs/sanity/`.
 
 ## Docs map
 
@@ -61,6 +65,8 @@ Read these instead of re-deriving context from the code:
 - `.impeccable/surfaces/prototype-1.md` — why this design direction was
   chosen over the other candidates during concepting.
 - `Finestra Brand Guideline.pdf` — source brand guideline.
+- `docs/sanity/` — the Sanity CMS: pricing, setup steps, content model,
+  webhook, the shop's how-to guide, and a progress checklist.
 
 ## Run locally
 
@@ -68,3 +74,6 @@ Read these instead of re-deriving context from the code:
 npm install
 npm run dev
 ```
+
+The site needs `SANITY_PROJECT_ID` in `.env.local` (see `.env.example`). The
+Studio runs separately: `cd studio && npm install && npm run dev`.

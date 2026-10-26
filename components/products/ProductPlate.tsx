@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { taka, type Product } from "@/lib/catalogue";
-import { PRODUCT_SHOTS } from "@/lib/images";
 
 /**
  * A plate on the shelf. It shows the piece and opens it; it does not take an
@@ -9,7 +8,7 @@ import { PRODUCT_SHOTS } from "@/lib/images";
  * the grid stays quiet enough to scan twenty-one of these on a phone.
  */
 export function ProductPlate({ product }: { product: Product }) {
-  const shot = PRODUCT_SHOTS[product.id];
+  const shot = product.image;
 
   return (
     <article className="flex h-full flex-col border-[3px] border-[var(--hair)] bg-[var(--ground)]">
@@ -28,6 +27,7 @@ export function ProductPlate({ product }: { product: Product }) {
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 45vw, 30vw"
           className="printed-photo object-cover"
+          style={{ objectPosition: shot.position }}
         />
         <div
           aria-hidden

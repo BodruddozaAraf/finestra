@@ -32,7 +32,7 @@ Fully online. Facebook ("Finestra Bangladesh") and Instagram ("finestrabanglades
 - Stated expansion direction: wallets, belts, and other everyday men's essentials, plus further fan based and interest driven collections.
 - The site does not take orders or payments and is not intended to. The client confirmed that ordering stays in a direct message, so the site is a showcase that ends by handing the customer to the shop's inbox. An earlier build carried an add to bag, a bag rail, and a checkout endpoint; all of it was removed rather than reworked.
 - Channel order is fixed: Instagram first, WhatsApp second, Facebook last. Instagram and Facebook links are live. The WhatsApp link has not been supplied yet and is a placeholder in `lib/contact.ts` that must be filled before launch.
-- Scope was two routes per prototype, Homepage and Products. After the client approved Prototype 1, the user asked for a product detail page, so `main` now also carries a page per piece at `/products/[id]`, prerendered from the placeholder catalogue. Still no account and no CMS.
+- Scope was two routes per prototype, Homepage and Products. After the client approved Prototype 1, the user asked for a product detail page, so `main` now also carries a page per piece at `/products/[id]`. No account. The catalogue is managed in Sanity (Free plan) so the shop can add, edit, and remove pieces itself; see `docs/sanity/`. The pieces loaded at first are the same invented placeholders, still labeled as such.
 - Undecided: real SKU list, real prices, shipping and returns policy, delivery coverage, payment methods, and the WhatsApp number. Because none of these are settled, no page states a reply time, a delivery time, a delivery charge, or a payment method.
 
 ## Brand Commitments

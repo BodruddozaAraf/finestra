@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Catalogue } from "@/components/products/Catalogue";
 import { Chevron } from "@/components/ui/Plate";
-import { CATALOGUE, LINES, type Line } from "@/lib/catalogue";
+import type { Line } from "@/lib/catalogue";
+import { getCatalogue } from "@/lib/sanity";
 
 export const metadata: Metadata = {
   title: "Shop | Finestra",
@@ -16,8 +17,11 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ line?: string }>;
 }) {
-  const { line } = await searchParams;
-  const valid = LINES.some((l) => l.id === line);
+  const [{ line }, { lines, pieces }] = await Promise.all([
+    searchParams,
+    getCatalogue(),
+  ]);
+  const valid = lines.some((l) => l.id === line);
   const initialLine: Filter = valid ? (line as Line) : "all";
 
   return (
@@ -28,7 +32,7 @@ export default async function ProductsPage({
             The whole shelf
           </h1>
           <p className="mt-4 max-w-[52ch] text-[1.02rem] leading-relaxed">
-            {CATALOGUE.length} pieces across rings, bracelets, pendants, and the
+            {pieces.length} pieces across rings, bracelets, pendants, and the
             character line. Open any one of them for the sizes it comes in and
             the way to reach the shop.
           </p>
@@ -44,7 +48,7 @@ export default async function ProductsPage({
         real Finestra products.
       </p>
 
-      <Catalogue initialLine={initialLine} />
+      <Catalogue pieces={pieces} lines={lines} initialLine={initialLine} />
     </main>
   );
 }

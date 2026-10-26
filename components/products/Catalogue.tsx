@@ -3,24 +3,32 @@
 import { useMemo, useState, useTransition } from "react";
 import { Check } from "@phosphor-icons/react";
 import { ProductPlate } from "./ProductPlate";
-import { CATALOGUE, LINES, type Line } from "@/lib/catalogue";
+import type { Line, LineInfo, Product } from "@/lib/catalogue";
 
 type Filter = Line | "all";
 
 type FilterRow = { id: Filter; label: string; note: string };
 
-export function Catalogue({ initialLine }: { initialLine: Filter }) {
+export function Catalogue({
+  pieces,
+  lines,
+  initialLine,
+}: {
+  pieces: Product[];
+  lines: LineInfo[];
+  initialLine: Filter;
+}) {
   const [filter, setFilter] = useState<Filter>(initialLine);
   const [pending, startTransition] = useTransition();
 
   const shown = useMemo(
-    () => (filter === "all" ? CATALOGUE : CATALOGUE.filter((p) => p.line === filter)),
-    [filter],
+    () => (filter === "all" ? pieces : pieces.filter((p) => p.line === filter)),
+    [filter, pieces],
   );
 
   const rows: FilterRow[] = [
-    { id: "all", label: "Everything", note: CATALOGUE.length + " pieces" },
-    ...LINES.map((l) => ({ id: l.id as Filter, label: l.label, note: l.note })),
+    { id: "all", label: "Everything", note: pieces.length + " pieces" },
+    ...lines.map((l) => ({ id: l.id, label: l.label, note: l.note })),
   ];
 
   function choose(next: Filter) {

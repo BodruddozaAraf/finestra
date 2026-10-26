@@ -1,12 +1,13 @@
 import { PieceRail } from "@/components/products/PieceRail";
-import { CATALOGUE } from "@/lib/catalogue";
+import { getCatalogue } from "@/lib/sanity";
 
 /** The homepage's cut of the shelf, on the shared rail. */
-export function ShelfRail() {
+export async function ShelfRail() {
+  const { pieces } = await getCatalogue();
   return (
     <PieceRail
       title="On the shelf this week"
-      pieces={CATALOGUE.filter((p) => p.onShelf)}
+      pieces={pieces.filter((p) => p.onShelf)}
     />
   );
 }

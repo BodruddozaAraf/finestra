@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { taka, type Product } from "@/lib/catalogue";
-import { PRODUCT_SHOTS } from "@/lib/images";
 
 /** Creep speed, in pixels per second. Fast enough to read as motion, still
  * short of a marquee. */
@@ -200,7 +199,7 @@ export function PieceRail({
       >
         {[...pieces, ...pieces].map((p, i) => {
           const dupe = i >= pieces.length;
-          const shot = PRODUCT_SHOTS[p.id];
+          const shot = p.image;
           return (
             <li
               key={`${p.id}-${dupe ? "b" : "a"}`}
@@ -221,6 +220,7 @@ export function PieceRail({
                     draggable={false}
                     sizes="(max-width: 640px) 74vw, 340px"
                     className="printed-photo object-cover"
+                    style={{ objectPosition: shot.position }}
                   />
                   <div
                     aria-hidden

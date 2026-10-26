@@ -5,18 +5,24 @@ import { CaretLeft } from "@phosphor-icons/react/dist/ssr";
 import { ProductBroadside } from "@/components/products/ProductBroadside";
 import { PieceRail } from "@/components/products/PieceRail";
 import { Chevron } from "@/components/ui/Plate";
-import { alongside, byId, CATALOGUE, lineOf } from "@/lib/catalogue";
+import { alongside } from "@/lib/catalogue";
+import { getCatalogue, getPiece } from "@/lib/sanity";
 
-/** Every piece is known at build time, so every piece page is prerendered. */
-export function generateStaticParams() {
-  return CATALOGUE.map((p) => ({ id: p.id }));
+/**
+ * Every piece published at build time is prerendered. One published later
+ * renders on its first visit and is cached from then on, so a new piece never
+ * waits for a redeploy.
+ */
+export async function generateStaticParams() {
+  const { pieces } = await getCatalogue();
+  return pieces.map((p) => ({ id: p.id }));
 }
 
 export async function generateMetadata(
   props: PageProps<"/products/[id]">,
 ): Promise<Metadata> {
   const { id } = await props.params;
-  const product = byId(id);
+  const product = await getPiece(id);
   if (!product) return { title: "Piece not found | Finestra" };
 
   return {
@@ -27,11 +33,11 @@ export async function generateMetadata(
 
 export default async function PiecePage(props: PageProps<"/products/[id]">) {
   const { id } = await props.params;
-  const product = byId(id);
+  const { pieces } = await getCatalogue();
+  const product = pieces.find((p) => p.id === id);
   if (!product) notFound();
 
-  const line = lineOf(product.line);
-  const rest = alongside(product);
+  const rest = alongside(product, pieces);
 
   return (
     <main>
@@ -50,7 +56,7 @@ export default async function PiecePage(props: PageProps<"/products/[id]">) {
             href={`/products?line=${product.line}`}
             className="banner text-[0.76rem] uppercase leading-none underline decoration-[3px] underline-offset-[6px]"
           >
-            {line.label}
+            {product.lineLabel}
           </Link>
         </div>
         <Chevron />
@@ -66,7 +72,10 @@ export default async function PiecePage(props: PageProps<"/products/[id]">) {
 
       <ProductBroadside product={product} />
 
-      <PieceRail title={`The rest of the ${line.label.toLowerCase()}`} pieces={rest} />
+      <PieceRail
+        title={`The rest of the ${product.lineLabel.toLowerCase()}`}
+        pieces={rest}
+      />
 
       <section className="field-plate">
         <Chevron />

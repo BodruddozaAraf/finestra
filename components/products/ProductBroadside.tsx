@@ -3,8 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ContactPlate } from "./ContactPlate";
-import { CARE, lineOf, taka, type Product } from "@/lib/catalogue";
-import { frameId, PRODUCT_FRAMES, PRODUCT_SHOTS } from "@/lib/images";
+import { CARE, taka, type Product } from "@/lib/catalogue";
 
 /**
  * The broadside: the piece page's layout family.
@@ -22,24 +21,16 @@ import { frameId, PRODUCT_FRAMES, PRODUCT_SHOTS } from "@/lib/images";
  * moment; here the only movement is the registration snap under a press.
  */
 export function ProductBroadside({ product }: { product: Product }) {
-  const shot = PRODUCT_SHOTS[product.id];
-  // The piece's own shot leads; the line's stand-in frames follow, minus any
-  // that would repeat it. Matched on the photograph, not the URL, because the
-  // two are requested at different widths.
-  const frames = [
-    shot,
-    ...(PRODUCT_FRAMES[product.line] ?? []).filter(
-      (f) => frameId(f.src) !== frameId(shot.src),
-    ),
-  ];
+  // The piece's own shot leads; the further photos follow in the order the
+  // shop set in the Studio.
+  const frames = [product.image, ...product.frames];
 
   const [frame, setFrame] = useState(0);
 
   const shown = frames[frame];
-  const line = lineOf(product.line);
 
   const specs = [
-    { label: "Line", value: line.label },
+    { label: "Line", value: product.lineLabel },
     { label: "Material", value: product.material },
     { label: product.variantLabel, value: product.variants.join(", ") },
     { label: "Care", value: CARE[product.finish] },
@@ -61,6 +52,7 @@ export function ProductBroadside({ product }: { product: Product }) {
                   priority
                   sizes="(max-width: 1024px) 100vw, 55vw"
                   className="printed-photo object-cover"
+                  style={{ objectPosition: shown.position }}
                 />
                 <div
                   aria-hidden
@@ -90,7 +82,7 @@ export function ProductBroadside({ product }: { product: Product }) {
                     const on = i === frame;
                     return (
                       <button
-                        key={f.src}
+                        key={`${i}-${f.src}`}
                         type="button"
                         onClick={() => setFrame(i)}
                         aria-pressed={on}
@@ -104,6 +96,7 @@ export function ProductBroadside({ product }: { product: Product }) {
                             fill
                             sizes="92px"
                             className={`printed-photo object-cover ${on ? "" : "opacity-55"}`}
+                            style={{ objectPosition: f.position }}
                           />
                           <span
                             aria-hidden
