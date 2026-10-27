@@ -6,5 +6,5 @@ export default defineCliConfig({
   // `npm run deploy` publishes the Studio to https://finestra.sanity.studio.
   // If Sanity says the name is taken, pick another here and in the docs.
   studioHost: 'finestra',
-  deployment: {autoUpdates: true},
+  deployment: {appId: 'qmltbodzkjvit0rehgjocwlt', autoUpdates: true},
 })

@@ -41,11 +41,11 @@ still to do. Details for each step are in the file named after it.
 
 ## Phase 4: go live (04)
 
-- [ ] Add `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_REVALIDATE_SECRET` to Vercel (Production + Preview).
-- [ ] Review the branch, then commit, merge to `main`, and push (only when you say so).
+- [x] Add `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_REVALIDATE_SECRET` to Vercel (Production + Preview).
+- [x] Review the branch, then commit, merge to `main`, and push.
 - [x] Webhook route tested locally on a production build (2026-10-26): unsigned or wrong secret → 401; signed → 200, and the next page request is a cache MISS (fresh), then HIT.
-- [ ] Create the publish webhook in sanity.io/manage.
-- [ ] Test: change a price in the Studio → the live page updates without a redeploy.
+- [x] Create the publish webhook in sanity.io/manage. (Filter `_type in ["product", "category"]` since 2026-10-27.)
+- [x] Test: change a price in the Studio → the live page updates without a redeploy. (2026-10-27, about 10 seconds.)
 - [ ] Test: add a new product → its page works without a redeploy.
 
 ## Phase 5: hand over to the shop (05)
