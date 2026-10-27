@@ -12,33 +12,33 @@ const CREEP_SPEED = 50;
  * creeping again. Short — this rail never really stops. */
 const RESUME_DELAY = 500;
 /** Pointer travel, in pixels, before a hold counts as a drag rather than a
- * tap through to the piece page. */
+ * tap through to the product page. */
 const DRAG_THRESHOLD = 6;
 
 /**
  * The shelf rail, defined once.
  *
  * One horizontal run of painted plates. Rank comes from cell count, so the
- * rail carries more pieces than a row of cards could without any plate
+ * rail carries more products than a row of cards could without any plate
  * growing louder than its neighbour. The homepage uses it for the week's
- * shelf and a piece page uses it for the rest of the line; it is the same
+ * shelf and a product page uses it for the rest of the category; it is the same
  * family both times, which is why it lives in one file.
  *
  * The rail creeps sideways on its own, always — the shelf never sits still.
- * The piece list is rendered several times back to back and the rail rests
+ * The product list is rendered several times back to back and the rail rests
  * in the middle run, wrapping by exactly one run whenever it leaves it, so
  * there is nothing to see: a true loop, not a scroll that hits an end and
  * snaps back. Nothing stops it except a hand actually on the shelf: drag it
  * with a mouse, or swipe it on a phone, and it holds still exactly as long
  * as you're holding it.
  */
-export function PieceRail({
+export function ProductRail({
   title,
-  pieces,
+  products,
   className = "",
 }: {
   title: string;
-  pieces: Product[];
+  products: Product[];
   className?: string;
 }) {
   const railRef = useRef<HTMLUListElement>(null);
@@ -49,11 +49,11 @@ export function PieceRail({
 
   useEffect(() => {
     const rail = railRef.current;
-    if (!rail || pieces.length === 0) return;
+    if (!rail || products.length === 0) return;
 
     function measure() {
       const items = rail!.children as HTMLCollectionOf<HTMLElement>;
-      const period = items[pieces.length].offsetLeft - items[0].offsetLeft;
+      const period = items[products.length].offsetLeft - items[0].offsetLeft;
       if (period > 0) {
         setCopies(Math.max(3, 2 + Math.ceil(rail!.clientWidth / period)));
       }
@@ -61,11 +61,11 @@ export function PieceRail({
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [pieces]);
+  }, [products]);
 
   useEffect(() => {
     const rail = railRef.current;
-    if (!rail || pieces.length === 0) return;
+    if (!rail || products.length === 0) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let raf = 0;
@@ -79,7 +79,7 @@ export function PieceRail({
     // the step and the wrap would visibly jump by the difference.
     function period() {
       const items = rail!.children as HTMLCollectionOf<HTMLElement>;
-      return items[pieces.length].offsetLeft - items[0].offsetLeft;
+      return items[products.length].offsetLeft - items[0].offsetLeft;
     }
 
     // Keep the position inside the middle run, [P, 2P). Every run looks the
@@ -170,7 +170,7 @@ export function PieceRail({
         dragged = true;
         // Capture only once it's a drag: captured from the press, the
         // release lands on the rail rather than the plate, and a plain
-        // click never reaches the piece link.
+        // click never reaches the product link.
         try {
           rail!.setPointerCapture(e.pointerId);
         } catch {
@@ -195,7 +195,7 @@ export function PieceRail({
     }
 
     // A drag that ended past the tap threshold shouldn't also fire the
-    // piece link's click — the release is a scroll gesture, not a tap.
+    // product link's click — the release is a scroll gesture, not a tap.
     function suppressClickAfterDrag(e: MouseEvent) {
       if (dragged) {
         e.preventDefault();
@@ -232,9 +232,9 @@ export function PieceRail({
       rail.removeEventListener("pointercancel", endHold);
       rail.removeEventListener("click", suppressClickAfterDrag, true);
     };
-  }, [pieces, copies]);
+  }, [products, copies]);
 
-  if (pieces.length === 0) return null;
+  if (products.length === 0) return null;
 
   return (
     <section
@@ -257,8 +257,8 @@ export function PieceRail({
         ref={railRef}
         className="mt-8 flex cursor-grab gap-5 overflow-x-auto pb-6 pl-[max(1rem,calc((100%-1400px)/2+1.75rem))] pr-4 select-none [-webkit-touch-callout:none] [scrollbar-width:thin] active:cursor-grabbing sm:pr-7"
       >
-        {Array.from({ length: copies }, () => pieces).flat().map((p, i) => {
-          const run = Math.floor(i / pieces.length);
+        {Array.from({ length: copies }, () => products).flat().map((p, i) => {
+          const run = Math.floor(i / products.length);
           const dupe = run !== 1;
           const shot = p.image;
           return (

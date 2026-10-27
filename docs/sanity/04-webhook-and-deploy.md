@@ -36,7 +36,7 @@ At https://www.sanity.io/manage → Finestra → **API** → **Webhooks** → **
 | URL | `https://finestra-tan.vercel.app/api/revalidate` (later, the real domain) |
 | Dataset | `production` |
 | Trigger on | Create, Update, Delete |
-| Filter | `_type in ["piece", "line"]` |
+| Filter | `_type in ["product", "category"]` |
 | Projection | leave empty |
 | Status | Enabled |
 | HTTP method | POST |
@@ -64,8 +64,8 @@ requested width. This keeps image work off Vercel's metered quota.
 
 ## Checking it works on production
 
-1. Open a piece page on the live site.
-2. In the Studio, change that piece's price and press **Publish**.
+1. Open a product page on the live site.
+2. In the Studio, change that product's price and press **Publish**.
 3. Reload the page after a few seconds. The new price shows.
 4. In sanity.io/manage → API → Webhooks → the webhook → **Attempts**, the
    latest delivery should show status `200`.

@@ -59,7 +59,7 @@ export const CHANNEL_MARKS = {
   facebook: FacebookLogo,
 };
 
-/** Instagram. The one the piece page leads with. */
+/** Instagram. The one the product page leads with. */
 export const PRIMARY = CHANNELS[0];
 
 /** WhatsApp and Facebook, in order. */

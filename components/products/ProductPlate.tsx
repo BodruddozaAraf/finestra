@@ -3,8 +3,8 @@ import Link from "next/link";
 import { taka, type Product } from "@/lib/catalogue";
 
 /**
- * A plate on the shelf. It shows the piece and opens it; it does not take an
- * order. Sizes, care, and the way to the shop all live on the piece page, so
+ * A plate on the shelf. It shows the product and opens it; it does not take an
+ * order. Sizes and the way to the shop live on the product page, so
  * the grid stays quiet enough to scan twenty-one of these on a phone.
  */
 export function ProductPlate({ product }: { product: Product }) {
@@ -12,10 +12,10 @@ export function ProductPlate({ product }: { product: Product }) {
 
   return (
     <article className="reveals flex h-full flex-col border-[3px] border-[var(--hair)] bg-[var(--ground)]">
-      {/* The photo plate opens the piece, because a thumb on a phone aims at
+      {/* The photo plate opens the product, because a thumb on a phone aims at
           the picture. It goes to the same place as the name link below, so it
           is out of the tab order rather than doubling the stop; the keyboard
-          route to the piece is the name. */}
+          route to the product is the name. */}
       <Link
         href={`/products/${product.id}`}
         tabIndex={-1}

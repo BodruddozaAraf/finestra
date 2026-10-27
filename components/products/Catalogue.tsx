@@ -3,32 +3,35 @@
 import { useMemo, useState, useTransition } from "react";
 import { Check } from "@phosphor-icons/react";
 import { ProductPlate } from "./ProductPlate";
-import type { Line, LineInfo, Product } from "@/lib/catalogue";
+import type { Category, CategoryInfo, Product } from "@/lib/catalogue";
 
-type Filter = Line | "all";
+type Filter = Category | "all";
 
 type FilterRow = { id: Filter; label: string; note: string };
 
 export function Catalogue({
-  pieces,
-  lines,
-  initialLine,
+  products,
+  categories,
+  initialCategory,
 }: {
-  pieces: Product[];
-  lines: LineInfo[];
-  initialLine: Filter;
+  products: Product[];
+  categories: CategoryInfo[];
+  initialCategory: Filter;
 }) {
-  const [filter, setFilter] = useState<Filter>(initialLine);
+  const [filter, setFilter] = useState<Filter>(initialCategory);
   const [pending, startTransition] = useTransition();
 
   const shown = useMemo(
-    () => (filter === "all" ? pieces : pieces.filter((p) => p.line === filter)),
-    [filter, pieces],
+    () =>
+      filter === "all"
+        ? products
+        : products.filter((p) => p.category === filter),
+    [filter, products],
   );
 
   const rows: FilterRow[] = [
-    { id: "all", label: "Everything", note: pieces.length + " pieces" },
-    ...lines.map((l) => ({ id: l.id, label: l.label, note: l.note })),
+    { id: "all", label: "Everything", note: products.length + " pieces" },
+    ...categories.map((c) => ({ id: c.id, label: c.label, note: c.note })),
   ];
 
   function choose(next: Filter) {
@@ -41,16 +44,16 @@ export function Catalogue({
         {/* Filter rail. Selection is drawn with a mark, never with colour. */}
         <aside className="min-w-0 lg:sticky lg:top-[92px] lg:self-start">
           <h2 className="banner text-[0.92rem] uppercase">
-            Lines
+            Categories
           </h2>
           <ul className="mt-4 flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-0 lg:overflow-visible lg:pb-0">
-            {rows.map((l) => {
-              const on = filter === l.id;
+            {rows.map((row) => {
+              const on = filter === row.id;
               return (
-                <li key={l.id} className="shrink-0 lg:w-full">
+                <li key={row.id} className="shrink-0 lg:w-full">
                   <button
                     type="button"
-                    onClick={() => choose(l.id)}
+                    onClick={() => choose(row.id)}
                     aria-pressed={on}
                     className={[
                       "flex w-full items-center gap-2 whitespace-nowrap border-[3px] px-3 py-2 text-left lg:whitespace-normal lg:border-0 lg:border-b-[3px] lg:px-0 lg:py-3",
@@ -70,10 +73,10 @@ export function Catalogue({
                     </span>
                     <span>
                       <span className="block banner text-[0.82rem] leading-tight">
-                        {l.label}
+                        {row.label}
                       </span>
                       <span className="hidden text-[0.78rem] leading-tight opacity-70 lg:block">
-                        {l.note}
+                        {row.note}
                       </span>
                     </span>
                   </button>
@@ -103,7 +106,7 @@ export function Catalogue({
                 Nothing on this shelf yet
               </p>
               <p className="mx-auto mt-3 max-w-[40ch] text-[0.97rem] leading-relaxed">
-                This line is still being photographed. Try another line, or message
+                This category is still being photographed. Try another one, or message
                 the shop and ask what is coming.
               </p>
               <button

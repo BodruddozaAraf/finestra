@@ -1,7 +1,7 @@
 # Design
 
 Prototype 1 for Finestra Bangladesh. Written from the built world, not ahead of
-it. Homepage, Products, and a page per piece.
+it. Homepage, Products, and a page per product.
 
 ## The world
 
@@ -84,17 +84,17 @@ Layout families: painted banner hero, horizontal shelf rail, framed diptych,
 route board, closing banner, footer plate, and the broadside. Each is used once
 per page, and only the shelf rail appears on two routes.
 
-The **broadside** is the piece page: one sheet inside one unbroken ink keyline,
+The **broadside** is the product page: one sheet inside one unbroken ink keyline,
 split into the frames on the left and the particulars column on the right, with
 a specification band run across the foot of the same frame. It follows the
-diptych's rule rather than the catalogue plate's, because a piece and its price
+diptych's rule rather than the catalogue plate's, because a product and its price
 are not two objects and so are not two frames. The particulars column centres
 itself against the frames rather than sitting to the top of a taller pane, and
 ends in the handoff.
 
 The **shelf rail** is the one family deliberately repeated: the homepage runs it
-for the week's shelf and a piece page runs it for the rest of that line. It is
-one component, `components/products/PieceRail.tsx`, so the repeat cannot drift.
+for the week's shelf and a product page runs it for the rest of that category. It is
+one component, `components/products/ProductRail.tsx`, so the repeat cannot drift.
 
 No eyebrows anywhere. Headings carry their own weight.
 
@@ -133,7 +133,7 @@ moment:
   shared `chevron-band` utility — crawls sideways at a steady pace, reversed
   in direction from its first pass. It never touches a plate or a letterform,
   so it reads as the print feed running, not as a second hero.
-- **The shelf rail** creeps sideways on its own, always. The piece list
+- **The shelf rail** creeps sideways on its own, always. The product list
   renders as several back-to-back runs (only the middle one exposed to
   assistive tech); the rail rests in the middle run and wraps by exactly one
   run, measured plate to plate, so there is nothing to see. It holds still
@@ -141,7 +141,7 @@ moment:
   stops it — and can be dragged either direction: by mouse, or on touch by
   the phone's own native swipe, momentum included.
 
-The piece page has the second authored moment: its photo develops out of the
+The product page has the second authored moment: its photo develops out of the
 print into true colour as the page opens, and again whenever another frame is
 picked. Also CSS, also finished-by-default — reduced motion lands straight on
 colour.
@@ -161,16 +161,16 @@ without the auto-creep or the custom drag.
 Photographs are screened toward the two plates (`printed-photo` plus a yellow
 multiply, `photo-tint`, at scope-dependent strength) so they read as printed
 stock rather than as someone else's photography — but only where the photo is
-mood. A customer has to see a piece's real colour before ordering it, so the
-piece page shows every frame untreated, and shelf and catalogue plates show
+mood. A customer has to see a product's real colour before ordering it, so the
+product page shows every frame untreated, and shelf and catalogue plates show
 true colour on hover. Hero, diptych, and banners stay fully printed. Every image resolves through `lib/images.ts`, a
 single swap point.
 
-A piece page wants more than one frame and Finestra has photographed none of
-these pieces, so the frame rail is the piece's own stand-in shot followed by two
-stand-in frames held per line in `PRODUCT_FRAMES`. Frames are matched to the
+A product page wants more than one frame and Finestra has photographed none of
+these products, so the frame rail is the product's own stand-in shot followed by two
+stand-in frames held per category in `PRODUCT_FRAMES`. Frames are matched to the
 lead shot by photograph rather than by URL, because the two are requested at
-different widths. Replacing the per-piece shots fills the rail without touching
+different widths. Replacing the per-product shots fills the rail without touching
 a component.
 
 ## Browser surfaces
@@ -181,10 +181,10 @@ palette. Prices and sizes use tabular numerals.
 ## What is placeholder
 
 - `lib/catalogue.ts`: invented products, prices, variants, descriptions, care
-  notes, and availability. The products page and every piece page state this on
+  notes, and availability. The products page and every product page state this on
   the surface.
 - `lib/images.ts`: openly licensed stand-in photography, not Finestra product
-  shots, including the supporting frames on a piece page.
+  shots, including the supporting frames on a product page.
 - `lib/contact.ts`: the WhatsApp link is a placeholder. Instagram and Facebook
   are the shop's real accounts.
 

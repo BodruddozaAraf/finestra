@@ -2,7 +2,7 @@
  * PLACEHOLDER IMAGERY for the homepage. Swap point for real Finestra photography.
  *
  * Product photographs no longer live here: the shop uploads them with each
- * piece in the Studio, and they arrive on the piece itself (see lib/sanity.ts).
+ * product in the Studio, and they arrive on the product itself (see lib/sanity.ts).
  * What remains is the homepage's hero and editorial frames. Nothing here is
  * generated; these are openly licensed photographs hosted on Unsplash's CDN,
  * standing in for shots Finestra has not taken yet.

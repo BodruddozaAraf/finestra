@@ -1,5 +1,5 @@
 /**
- * Finestra's Studio: where the shop adds, edits, and removes pieces.
+ * Finestra's Studio: where the shop adds, edits, and removes products.
  *
  * Hosted by Sanity at the studioHost in sanity.cli.ts. The website never
  * imports this folder; it reads published content over Sanity's HTTP API (see
@@ -27,14 +27,14 @@ export default defineConfig({
     types: schemaTypes,
     templates: (prev) => [
       ...prev,
-      // "+" inside Pieces by line > Rings starts a piece already set to Rings.
+      // "+" inside Products by category > Rings starts a product already set to Rings.
       {
-        id: 'piece-in-line',
-        title: 'Piece in this line',
-        schemaType: 'piece',
-        parameters: [{name: 'lineId', type: 'string'}],
-        value: ({lineId}: {lineId: string}) => ({
-          line: {_type: 'reference', _ref: lineId},
+        id: 'product-in-category',
+        title: 'Product in this category',
+        schemaType: 'product',
+        parameters: [{name: 'categoryId', type: 'string'}],
+        value: ({categoryId}: {categoryId: string}) => ({
+          category: {_type: 'reference', _ref: categoryId},
         }),
       },
     ],

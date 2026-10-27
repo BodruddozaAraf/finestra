@@ -6,12 +6,12 @@ lifestyle brand. Next.js App Router, TypeScript, Tailwind CSS v4.
 ## Routes
 
 - `/` — homepage.
-- `/products` — the shelf, with line filters.
-- `/products/[id]` — one page per piece, prerendered from the catalogue in
+- `/products` — the shelf, with category filters.
+- `/products/[id]` — one page per product, prerendered from the catalogue in
   Sanity.
 - `/api/revalidate` — Sanity's publish webhook; refreshes cached pages.
 
-The site takes no orders and no payments. Every piece page ends by handing the
+The site takes no orders and no payments. Every product page ends by handing the
 customer to the shop's inbox — Instagram, then WhatsApp, then Facebook — and
 every one of those links resolves through `lib/contact.ts`.
 

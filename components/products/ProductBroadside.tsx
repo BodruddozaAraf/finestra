@@ -3,27 +3,27 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ContactPlate } from "./ContactPlate";
-import { CARE, taka, type Product } from "@/lib/catalogue";
+import { taka, type Product } from "@/lib/catalogue";
 
 /**
- * The broadside: the piece page's layout family.
+ * The broadside: the product page's layout family.
  *
  * One sheet inside one unbroken ink keyline, split into the frames on the left
  * and the particulars column on the right, with a specification band run across
  * the foot of the same frame. It follows the diptych's rule rather than the
- * catalogue plate's: a piece and its price are not two objects, so they are not
+ * catalogue plate's: a product and its price are not two objects, so they are not
  * two frames.
  *
- * Nothing here takes an order. The column states what the piece is and what it
+ * Nothing here takes an order. The column states what the product is and what it
  * costs, and hands the customer to the shop's inbox.
  *
  * Photos here are true colour — this is where a customer decides, so the
- * piece is shown as it is, not screened toward the plates. The one movement
+ * product is shown as it is, not screened toward the plates. The one movement
  * on load is the photo developing out of the print into colour, once the
  * photo itself has arrived.
  */
 export function ProductBroadside({ product }: { product: Product }) {
-  // The piece's own shot leads; the further photos follow in the order the
+  // The product's own shot leads; the further photos follow in the order the
   // shop set in the Studio.
   const frames = [product.image, ...product.frames];
 
@@ -37,10 +37,9 @@ export function ProductBroadside({ product }: { product: Product }) {
   const [developed, setDeveloped] = useState<string | null>(null);
 
   const specs = [
-    { label: "Line", value: product.lineLabel },
+    { label: "Category", value: product.categoryLabel },
     { label: "Material", value: product.material },
     { label: product.variantLabel, value: product.variants.join(", ") },
-    { label: "Care", value: CARE[product.finish] },
   ];
 
   return (
@@ -143,7 +142,7 @@ export function ProductBroadside({ product }: { product: Product }) {
                 {product.material}
               </p>
 
-              {/* What the piece comes in. Information, not a control: the
+              {/* What the product comes in. Information, not a control: the
                   site is telling the customer, not taking an order, so there
                   is nothing to choose and nothing to get wrong. */}
               <div className="mt-7">

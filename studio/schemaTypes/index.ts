@@ -1,4 +1,4 @@
-import {line} from './line'
-import {piece} from './piece'
+import {category} from './category'
+import {product} from './product'
 
-export const schemaTypes = [piece, line]
+export const schemaTypes = [product, category]

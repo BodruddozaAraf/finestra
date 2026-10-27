@@ -7,14 +7,14 @@
  * created or stored. Safe to run twice: documents use fixed IDs and are
  * replaced, and Sanity stores an identical photo only once.
  *
- * The shop is expected to delete these pieces as its real ones go in.
+ * The shop is expected to delete these products as its real ones go in.
  */
 
 import {getCliClient} from 'sanity/cli'
 import {API_VERSION} from '../env'
 import {
   CATALOGUE,
-  LINES,
+  CATEGORIES,
   PRODUCT_FRAMES,
   PRODUCT_SHOTS,
   frameId,
@@ -60,52 +60,46 @@ const image = async (photo: Photo, withKey = false) => ({
 async function main() {
   const tx = client.transaction()
 
-  LINES.forEach((l, i) => {
+  CATEGORIES.forEach((c, i) => {
     tx.createOrReplace({
-      _id: `line-${l.id}`,
-      _type: 'line',
-      label: l.label,
-      slug: {_type: 'slug', current: l.id},
-      note: l.note,
+      _id: `category-${c.id}`,
+      _type: 'category',
+      label: c.label,
+      slug: {_type: 'slug', current: c.id},
+      note: c.note,
       order: (i + 1) * 10,
     })
   })
 
-  const positionInLine = new Map<string, number>()
-
   for (const p of CATALOGUE) {
     console.log(p.name)
     const shot = PRODUCT_SHOTS[p.id]
-    // As the site showed it before the switch: the piece's own shot, then the
-    // line's stand-in frames minus any that repeat it.
-    const frames = (PRODUCT_FRAMES[p.line] ?? []).filter(
+    // As the site showed it before the switch: the product's own shot, then
+    // the category's stand-in frames minus any that repeat it.
+    const frames = (PRODUCT_FRAMES[p.category] ?? []).filter(
       (f) => frameId(f.src) !== frameId(shot.src),
     )
-    const position = (positionInLine.get(p.line) ?? 0) + 10
-    positionInLine.set(p.line, position)
 
     tx.createOrReplace({
-      _id: `piece-${p.id}`,
-      _type: 'piece',
+      _id: `product-${p.id}`,
+      _type: 'product',
       name: p.name,
       slug: {_type: 'slug', current: p.id},
-      line: {_type: 'reference', _ref: `line-${p.line}`},
+      category: {_type: 'reference', _ref: `category-${p.category}`},
       price: p.price,
       material: p.material,
       story: p.story,
-      finish: p.finish,
       variantLabel: p.variantLabel,
       variants: p.variants,
       soldOut: p.soldOut ?? false,
       onShelf: p.onShelf ?? false,
-      order: position,
       mainImage: await image(shot),
       frames: await Promise.all(frames.map((f) => image(f, true))),
     })
   }
 
   await tx.commit()
-  console.log(`\nSeeded ${LINES.length} lines and ${CATALOGUE.length} pieces.`)
+  console.log(`\nSeeded ${CATEGORIES.length} categories and ${CATALOGUE.length} products.`)
 }
 
 main().catch((err) => {

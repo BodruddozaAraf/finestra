@@ -2,23 +2,15 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 import {TagIcon} from '@sanity/icons/Tag'
 
 /**
- * One piece on the shelf. Mirrors the Product type in lib/catalogue.ts at the
- * repository root; change the two together.
+ * One product on the shelf. Mirrors the Product type in lib/catalogue.ts at
+ * the repository root; change the two together.
  *
- * Validation here is what stops a half-filled piece from being published, so
- * the site never has to guess at a missing price or photograph.
+ * Validation here is what stops a half-filled product from being published,
+ * so the site never has to guess at a missing price or photograph.
+ *
+ * There is no position field: products show newest first, by when they were
+ * created in the Studio.
  */
-
-/** Keys into CARE in lib/catalogue.ts. Adding one here needs care copy there. */
-const FINISHES = [
-  {title: 'Silver (925)', value: 'silver'},
-  {title: 'Steel', value: 'steel'},
-  {title: 'Cord', value: 'cord'},
-  {title: 'Stone', value: 'stone'},
-  {title: 'Acrylic', value: 'acrylic'},
-  {title: 'Enamel', value: 'enamel'},
-  {title: 'Resin', value: 'resin'},
-]
 
 /** The description a screen reader speaks in place of a photograph. */
 const altField = defineField({
@@ -30,9 +22,9 @@ const altField = defineField({
   validation: (rule) => rule.required().error('Add a short description of the photo.'),
 })
 
-export const piece = defineType({
-  name: 'piece',
-  title: 'Piece',
+export const product = defineType({
+  name: 'product',
+  title: 'Product',
   type: 'document',
   icon: TagIcon,
   groups: [
@@ -54,16 +46,16 @@ export const piece = defineType({
       type: 'slug',
       group: 'basics',
       description:
-        'The end of the piece page link, e.g. /products/kalighat-signet. Press Generate. Avoid changing it after the piece is shared, or old links break.',
+        'The end of the product page link, e.g. /products/kalighat-signet. Press Generate. Avoid changing it after the product is shared, or old links break.',
       options: {source: 'name', maxLength: 80},
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'line',
-      title: 'Line',
+      name: 'category',
+      title: 'Category',
       type: 'reference',
       group: 'basics',
-      to: [{type: 'line'}],
+      to: [{type: 'category'}],
       options: {disableNew: true},
       validation: (rule) => rule.required(),
     }),
@@ -80,7 +72,7 @@ export const piece = defineType({
       title: 'Sold out',
       type: 'boolean',
       group: 'basics',
-      description: 'Keeps the piece on the site, marked as sold out.',
+      description: 'Keeps the product on the site, marked as sold out.',
       initialValue: false,
     }),
     defineField({
@@ -88,17 +80,8 @@ export const piece = defineType({
       title: 'On the homepage shelf',
       type: 'boolean',
       group: 'basics',
-      description: 'Shows the piece in "On the shelf this week" on the homepage.',
+      description: 'Shows the product in "On the shelf this week" on the homepage.',
       initialValue: false,
-    }),
-    defineField({
-      name: 'order',
-      title: 'Position',
-      type: 'number',
-      group: 'basics',
-      description: 'Lower numbers come first within the line.',
-      initialValue: 100,
-      validation: (rule) => rule.integer().min(0),
     }),
 
     defineField({
@@ -107,7 +90,7 @@ export const piece = defineType({
       type: 'image',
       group: ['basics', 'photos'],
       description:
-        'The photo on the shelf and at the top of the piece page. Square photos work best. Use the crop icon to mark the part that must always stay in view.',
+        'The photo on the shelf and at the top of the product page. Square photos work best. Use the crop icon to mark the part that must always stay in view.',
       options: {hotspot: true},
       fields: [altField],
       validation: (rule) => rule.required().assetRequired(),
@@ -117,7 +100,7 @@ export const piece = defineType({
       title: 'More photos',
       type: 'array',
       group: 'photos',
-      description: 'Other angles, or the piece being worn. Optional. Drag to reorder.',
+      description: 'Other angles, or the product being worn. Optional. Drag to reorder.',
       of: [
         defineArrayMember({
           type: 'image',
@@ -142,17 +125,8 @@ export const piece = defineType({
       type: 'text',
       rows: 3,
       group: 'details',
-      description: 'One or two sentences on what the piece is.',
+      description: 'One or two sentences on what the product is.',
       validation: (rule) => rule.required().max(240),
-    }),
-    defineField({
-      name: 'finish',
-      title: 'Finish',
-      type: 'string',
-      group: 'details',
-      description: 'Picks the care note shown on the piece page.',
-      options: {list: FINISHES},
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'variantLabel',
@@ -175,27 +149,20 @@ export const piece = defineType({
     }),
   ],
   orderings: [
-    {
-      title: 'Line, then position',
-      name: 'lineThenOrder',
-      by: [
-        {field: 'line.order', direction: 'asc'},
-        {field: 'order', direction: 'asc'},
-      ],
-    },
+    {title: 'Newest first', name: 'newest', by: [{field: '_createdAt', direction: 'desc'}]},
     {title: 'Name', name: 'nameAsc', by: [{field: 'name', direction: 'asc'}]},
     {title: 'Price, low to high', name: 'priceAsc', by: [{field: 'price', direction: 'asc'}]},
   ],
   preview: {
     select: {
       name: 'name',
-      line: 'line.label',
+      category: 'category.label',
       price: 'price',
       soldOut: 'soldOut',
       media: 'mainImage',
     },
-    prepare({name, line, price, soldOut, media}) {
-      const bits = [line, price ? `৳ ${Number(price).toLocaleString('en-US')}` : null]
+    prepare({name, category, price, soldOut, media}) {
+      const bits = [category, price ? `৳ ${Number(price).toLocaleString('en-US')}` : null]
       if (soldOut) bits.push('Sold out')
       return {title: name, subtitle: bits.filter(Boolean).join(' · '), media}
     },

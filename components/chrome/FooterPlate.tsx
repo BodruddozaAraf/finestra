@@ -25,7 +25,7 @@ export function FooterPlate() {
             Shop the shelf
           </Link>
           <Link
-            href="/products?line=anime"
+            href="/products?category=anime"
             className="banner text-[0.85rem] uppercase underline decoration-[3px] underline-offset-[6px]"
           >
             Anime pieces

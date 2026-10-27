@@ -3,27 +3,27 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr";
 import { ProductBroadside } from "@/components/products/ProductBroadside";
-import { PieceRail } from "@/components/products/PieceRail";
+import { ProductRail } from "@/components/products/ProductRail";
 import { Chevron } from "@/components/ui/Plate";
 import { alongside } from "@/lib/catalogue";
-import { getCatalogue, getPiece } from "@/lib/sanity";
+import { getCatalogue, getProduct } from "@/lib/sanity";
 
 /**
- * Every piece published at build time is prerendered. One published later
- * renders on its first visit and is cached from then on, so a new piece never
+ * Every product published at build time is prerendered. One published later
+ * renders on its first visit and is cached from then on, so a new product never
  * waits for a redeploy.
  */
 export async function generateStaticParams() {
-  const { pieces } = await getCatalogue();
-  return pieces.map((p) => ({ id: p.id }));
+  const { products } = await getCatalogue();
+  return products.map((p) => ({ id: p.id }));
 }
 
 export async function generateMetadata(
   props: PageProps<"/products/[id]">,
 ): Promise<Metadata> {
   const { id } = await props.params;
-  const product = await getPiece(id);
-  if (!product) return { title: "Piece not found | Finestra" };
+  const product = await getProduct(id);
+  if (!product) return { title: "Product not found | Finestra" };
 
   return {
     title: `${product.name} | Finestra`,
@@ -31,17 +31,17 @@ export async function generateMetadata(
   };
 }
 
-export default async function PiecePage(props: PageProps<"/products/[id]">) {
+export default async function ProductPage(props: PageProps<"/products/[id]">) {
   const { id } = await props.params;
-  const { pieces } = await getCatalogue();
-  const product = pieces.find((p) => p.id === id);
+  const { products } = await getCatalogue();
+  const product = products.find((p) => p.id === id);
   if (!product) notFound();
 
-  const rest = alongside(product, pieces);
+  const rest = alongside(product, products);
 
   return (
     <main>
-      {/* The route strip. Navigation only: the piece's name is the page's h1,
+      {/* The route strip. Navigation only: the product's name is the page's h1,
           down in the broadside, so nothing up here is an eyebrow for it. */}
       <section className="field-plate">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-4 sm:px-7">
@@ -53,10 +53,10 @@ export default async function PiecePage(props: PageProps<"/products/[id]">) {
             The whole shelf
           </Link>
           <Link
-            href={`/products?line=${product.line}`}
+            href={`/products?category=${product.category}`}
             className="banner text-[0.76rem] uppercase leading-none underline decoration-[3px] underline-offset-[6px]"
           >
-            {product.lineLabel}
+            {product.categoryLabel}
           </Link>
         </div>
         <Chevron />
@@ -72,9 +72,9 @@ export default async function PiecePage(props: PageProps<"/products/[id]">) {
 
       <ProductBroadside product={product} />
 
-      <PieceRail
-        title={`The rest of the ${product.lineLabel.toLowerCase()}`}
-        pieces={rest}
+      <ProductRail
+        title={`The rest of the ${product.categoryLabel.toLowerCase()}`}
+        products={rest}
       />
 
       <section className="field-plate">

@@ -1,10 +1,10 @@
 /**
  * Sanity's publish webhook lands here.
  *
- * When the shop publishes, unpublishes, or deletes a piece or a line, Sanity
+ * When the shop publishes, unpublishes, or deletes a product or a category, Sanity
  * POSTs to this route, signed with SANITY_REVALIDATE_SECRET. A valid call
  * expires every cached Sanity read at once (the catalogue is small enough that
- * one tag is simpler than tracking which page shows which piece), and the next
+ * one tag is simpler than tracking which page shows which product), and the next
  * visit to any page renders it fresh.
  *
  * Set up in sanity.io/manage > API > Webhooks; see

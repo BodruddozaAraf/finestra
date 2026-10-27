@@ -3,35 +3,40 @@ import {FolderIcon} from '@sanity/icons/Folder'
 import {TagIcon} from '@sanity/icons/Tag'
 import {API_VERSION} from './env'
 
+const NEWEST_FIRST = [{field: '_createdAt', direction: 'desc' as const}]
+
 /**
- * The Studio's left-hand menu, in the shop's words: every piece, the same
- * pieces split by line, then the lines themselves.
+ * The Studio's left-hand menu, in the shop's words: every product, the same
+ * products split by category, then the categories themselves.
  */
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('Finestra')
     .items([
-      S.documentTypeListItem('piece').title('Pieces').icon(TagIcon),
+      S.documentTypeListItem('product')
+        .title('Products')
+        .icon(TagIcon)
+        .child(S.documentTypeList('product').title('Products').defaultOrdering(NEWEST_FIRST)),
       S.listItem()
-        .title('Pieces by line')
+        .title('Products by category')
         .icon(FolderIcon)
         .child(
-          S.documentTypeList('line')
-            .title('Pieces by line')
+          S.documentTypeList('category')
+            .title('Products by category')
             .defaultOrdering([{field: 'order', direction: 'asc'}])
-            .child((lineId) =>
+            .child((categoryId) =>
               S.documentList()
-                .title('Pieces')
-                .schemaType('piece')
+                .title('Products')
+                .schemaType('product')
                 .apiVersion(API_VERSION)
-                .filter('_type == "piece" && line._ref == $lineId')
-                .params({lineId})
-                .defaultOrdering([{field: 'order', direction: 'asc'}])
+                .filter('_type == "product" && category._ref == $categoryId')
+                .params({categoryId})
+                .defaultOrdering(NEWEST_FIRST)
                 .initialValueTemplates([
-                  S.initialValueTemplateItem('piece-in-line', {lineId}),
+                  S.initialValueTemplateItem('product-in-category', {categoryId}),
                 ]),
             ),
         ),
       S.divider(),
-      S.documentTypeListItem('line').title('Lines').icon(FolderIcon),
+      S.documentTypeListItem('category').title('Categories').icon(FolderIcon),
     ])

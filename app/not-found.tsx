@@ -2,8 +2,8 @@ import { LozengeLink } from "@/components/ui/Lozenge";
 import { Chevron } from "@/components/ui/Plate";
 
 /**
- * A missing piece still lands on the sign, not on the browser's own 404. This
- * is what notFound() from a piece page resolves to, and what an unmatched URL
+ * A missing product still lands on the sign, not on the browser's own 404. This
+ * is what notFound() from a product page resolves to, and what an unmatched URL
  * gets as well.
  */
 export default function NotFound() {

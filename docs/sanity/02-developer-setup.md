@@ -66,9 +66,9 @@ npm run schema:deploy
 ```
 
 This uploads the field definitions from `studio/schemaTypes/`, so Sanity's
-tools (including the MCP server) know what a piece looks like.
+tools (including the MCP server) know what a product looks like.
 
-## Step 5: load the sample pieces
+## Step 5: load the sample products
 
 ```bash
 npm run seed
@@ -76,10 +76,10 @@ npm run seed
 
 This runs `studio/scripts/seed.ts` as you (no API token is created). It
 downloads the 21 placeholder photos from Unsplash, uploads them to Sanity,
-and creates 4 lines and 21 pieces with fixed IDs. It is safe to run again.
+and creates 4 categories and 21 products with fixed IDs. It is safe to run again.
 
 After this the website looks exactly as it did before the switch, which
-proves the wiring works. The shop deletes these pieces as real ones go in.
+proves the wiring works. The shop deletes these products as real ones go in.
 
 ## Step 6: open the Studio locally
 
@@ -87,8 +87,8 @@ proves the wiring works. The shop deletes these pieces as real ones go in.
 npm run dev
 ```
 
-Open http://localhost:3333 and sign in. You should see **Pieces**, **Pieces by
-line**, and **Lines** in the left menu, with 21 pieces. The GROQ playground
+Open http://localhost:3333 and sign in. You should see **Products**, **Products by
+category**, and **Categories** in the left menu, with 21 products. The GROQ playground
 (Vision) appears only here in development, never in the hosted Studio.
 
 ## Step 7: run the website against Sanity
@@ -99,7 +99,7 @@ From the repository root:
 npm run dev
 ```
 
-Check http://localhost:3000, `/products`, and a piece page such as
+Check http://localhost:3000, `/products`, and a product page such as
 `/products/ring-signet`. Product photos should now load from `cdn.sanity.io`.
 
 ## Step 8: put the Studio online
@@ -132,12 +132,10 @@ If that prompts for anything unexpected, stop and check `npx sanity init --help`
 
 ## Changing fields later
 
-1. Edit `studio/schemaTypes/piece.ts` (or `line.ts`).
+1. Edit `studio/schemaTypes/product.ts` (or `category.ts`).
 2. Change the matching `Product` type in `lib/catalogue.ts` and the query in `lib/sanity.ts`.
 3. `cd studio && npm run schema:deploy && npm run deploy`.
 4. Commit and push the website change as usual.
-
-A new **finish** also needs care copy added to `CARE` in `lib/catalogue.ts`.
 
 ## Next
 

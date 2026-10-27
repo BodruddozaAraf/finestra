@@ -1,7 +1,7 @@
 /**
  * The site's one door into Sanity. Server only.
  *
- * Every piece and line on the site is read through getCatalogue(). It asks
+ * Every product and category on the site is read through getCatalogue(). It asks
  * Sanity's HTTP query API with a plain fetch, which Next caches under the
  * SANITY_TAG tag. The Studio's publish webhook (app/api/revalidate) expires that
  * tag, so a change the shop publishes reaches the site on the next visit
@@ -13,7 +13,7 @@
 
 import { cache } from "react";
 import { createImageUrlBuilder } from "@sanity/image-url";
-import type { Finish, LineInfo, Photo, Product } from "./catalogue";
+import type { CategoryInfo, Photo, Product } from "./catalogue";
 
 const projectId = process.env.SANITY_PROJECT_ID ?? "";
 const dataset = process.env.SANITY_DATASET || "production";
@@ -70,28 +70,27 @@ function photo(image: SanityImage): Photo {
 }
 
 /**
- * Lines and pieces in shelf order. Pieces missing a slug, a line, or a photo
- * are skipped rather than rendered half-built; the Studio's validation should
+ * Categories in shelf order, and products newest first. Products missing a
+ * slug, a category, or a photo are skipped rather than rendered half-built; the Studio's validation should
  * stop those being published in the first place.
  */
 const CATALOGUE_QUERY = `{
-  "lines": *[_type == "line" && defined(slug.current)]
+  "categories": *[_type == "category" && defined(slug.current)]
     | order(coalesce(order, 999) asc, label asc) {
       "id": slug.current,
       label,
       "note": coalesce(note, "")
     },
-  "pieces": *[_type == "piece" && defined(slug.current)
-      && defined(line->slug.current) && defined(mainImage.asset)]
-    | order(coalesce(line->order, 999) asc, coalesce(order, 999) asc, name asc) {
+  "products": *[_type == "product" && defined(slug.current)
+      && defined(category->slug.current) && defined(mainImage.asset)]
+    | order(_createdAt desc, name asc) {
       "id": slug.current,
       name,
-      "line": line->slug.current,
-      "lineLabel": line->label,
+      "category": category->slug.current,
+      "categoryLabel": category->label,
       price,
       "material": coalesce(material, ""),
       "story": coalesce(story, ""),
-      finish,
       "variantLabel": coalesce(variantLabel, ""),
       "variants": coalesce(variants, []),
       "soldOut": soldOut == true,
@@ -101,24 +100,25 @@ const CATALOGUE_QUERY = `{
     }
 }`;
 
-type RawPiece = Omit<Product, "image" | "frames" | "finish"> & {
-  finish: Finish;
+type RawProduct = Omit<Product, "image" | "frames"> & {
   mainImage: SanityImage;
   frames: SanityImage[];
 };
 
 /** One request per render, however many components ask. */
 export const getCatalogue = cache(
-  async (): Promise<{ lines: LineInfo[]; pieces: Product[] }> => {
-    const { lines, pieces } = await query<{
-      lines: LineInfo[];
-      pieces: RawPiece[];
+  async (): Promise<{ categories: CategoryInfo[]; products: Product[] }> => {
+    const { categories, products } = await query<{
+      categories: CategoryInfo[];
+      products: RawProduct[];
     }>(CATALOGUE_QUERY);
 
     return {
-      // A line with nothing in it would be a filter that empties the shelf.
-      lines: lines.filter((l) => pieces.some((p) => p.line === l.id)),
-      pieces: pieces.map(({ mainImage, frames, ...rest }) => ({
+      // A category with nothing in it would be a filter that empties the shelf.
+      categories: categories.filter((c) =>
+        products.some((p) => p.category === c.id),
+      ),
+      products: products.map(({ mainImage, frames, ...rest }) => ({
         ...rest,
         image: photo(mainImage),
         frames: frames.map(photo),
@@ -127,7 +127,7 @@ export const getCatalogue = cache(
   },
 );
 
-export async function getPiece(id: string) {
-  const { pieces } = await getCatalogue();
-  return pieces.find((p) => p.id === id);
+export async function getProduct(id: string) {
+  const { products } = await getCatalogue();
+  return products.find((p) => p.id === id);
 }

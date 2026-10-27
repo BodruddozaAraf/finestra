@@ -2,7 +2,7 @@
 
 ## Why Sanity, and not WordPress
 
-Until now the 21 pieces were typed into `lib/catalogue.ts`, with their photos
+Until now the 21 products were typed into `lib/catalogue.ts`, with their photos
 in `lib/images.ts`. The client wants to manage products themselves. Headless
 WordPress was chosen first (2026-09-24), but it needs paid hosting, plugins
 (ACF), and someone keeping it patched, and it stalled on who would host it.
@@ -14,9 +14,9 @@ that became the swap point.
 
 ## The pieces of Sanity
 
-- **Content Lake**: Sanity's hosted database. Pieces and lines are stored here.
+- **Content Lake**: Sanity's hosted database. Products and categories are stored here.
 - **Sanity Studio**: the admin panel. It is built from the code in `studio/`
-  (the *schema* there decides which fields a piece has), and Sanity hosts it
+  (the *schema* there decides which fields a product has), and Sanity hosts it
   for free at `https://finestra.sanity.studio`.
 - **GROQ**: Sanity's query language. The site uses one GROQ query, in
   `lib/sanity.ts`.
@@ -36,7 +36,7 @@ unless someone upgrades and adds a card.
 | Limit (per project) | Finestra's likely use | Margin |
 |---|---|---|
 | 20 user seats; roles Administrator and Viewer only | Developer + shop: 2 or 3 | Plenty |
-| 10,000 documents (each uploaded photo counts as one) | ~21 pieces + 4 lines + photos: 100 to 300 | Plenty |
+| 10,000 documents (each uploaded photo counts as one) | ~21 products + 4 categories + photos: 100 to 300 | Plenty |
 | 250,000 API requests a month | The site caches; Sanity is asked only after a publish or once an hour per page: a few thousand | Plenty |
 | 1,000,000 API CDN requests a month | Not used by the site | n/a |
 | 100 GB bandwidth a month | Mostly photos. A shelf visit loads 1 to 2 MB of images: about 50,000 to 80,000 visits a month | **The one to watch** |

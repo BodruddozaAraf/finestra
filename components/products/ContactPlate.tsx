@@ -4,7 +4,7 @@ import { CHANNEL_MARKS, PRIMARY, SECONDARY } from "@/lib/contact";
 /**
  * The handoff, defined once.
  *
- * The site's job ends here: it has shown the piece, and the order is placed in
+ * The site's job ends here: it has shown the product, and the order is placed in
  * the shop's inbox. Instagram leads on the lozenge because that is where this
  * audience already is; WhatsApp and Facebook follow as marked links, in the
  * grammar the footer already uses.

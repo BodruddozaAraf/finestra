@@ -2,15 +2,15 @@ import {defineField, defineType} from 'sanity'
 import {FolderIcon} from '@sanity/icons/Folder'
 
 /**
- * A product line: Rings, Bracelets, Pendants, Anime, and whatever the shop
- * adds next (wallets, belts). Each line becomes a filter on the shelf.
+ * A product category: Rings, Bracelets, Pendants, Anime, and whatever the shop
+ * adds next (wallets, belts). Each category becomes a filter on the shelf.
  *
- * A line that pieces still point to cannot be deleted; Sanity refuses until
- * those pieces are moved or deleted first.
+ * A category that products still point to cannot be deleted; Sanity refuses
+ * until those products are moved or deleted first.
  */
-export const line = defineType({
-  name: 'line',
-  title: 'Line',
+export const category = defineType({
+  name: 'category',
+  title: 'Category',
   type: 'document',
   icon: FolderIcon,
   fields: [
@@ -26,7 +26,7 @@ export const line = defineType({
       title: 'Web address',
       type: 'slug',
       description:
-        'Used in links like /products?line=rings. Press Generate. Avoid changing it once the line is live, or old links stop filtering.',
+        'Used in links like /products?category=rings. Press Generate. Avoid changing it once the category is live, or old links stop filtering.',
       options: {source: 'label', maxLength: 40},
       validation: (rule) => rule.required(),
     }),
