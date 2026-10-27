@@ -17,8 +17,10 @@ import { CARE, taka, type Product } from "@/lib/catalogue";
  * Nothing here takes an order. The column states what the piece is and what it
  * costs, and hands the customer to the shop's inbox.
  *
- * No load animation. The hero printing itself is the site's one authored
- * moment; here the only movement is the registration snap under a press.
+ * Photos here are true colour — this is where a customer decides, so the
+ * piece is shown as it is, not screened toward the plates. The one movement
+ * on load is the photo developing out of the print into colour, once the
+ * photo itself has arrived.
  */
 export function ProductBroadside({ product }: { product: Product }) {
   // The piece's own shot leads; the further photos follow in the order the
@@ -28,6 +30,11 @@ export function ProductBroadside({ product }: { product: Product }) {
   const [frame, setFrame] = useState(0);
 
   const shown = frames[frame];
+
+  // Which frame's photo has finished loading. The develop waits for it: a
+  // slow photo would otherwise spend the whole animation as an empty plate
+  // and arrive already in colour.
+  const [developed, setDeveloped] = useState<string | null>(null);
 
   const specs = [
     { label: "Line", value: product.lineLabel },
@@ -43,24 +50,32 @@ export function ProductBroadside({ product }: { product: Product }) {
           <div className="grid lg:grid-cols-[1fr_0.82fr]">
             {/* The frames. */}
             <div className="border-b-[3px] border-[var(--hair)] lg:border-b-0 lg:border-r-[3px]">
-              <div className="relative aspect-4/5 overflow-hidden bg-[var(--color-ink)] sm:aspect-square lg:aspect-6/5">
+              <div
+                data-developed={developed === shown.src || undefined}
+                className="develops relative aspect-4/5 overflow-hidden bg-[var(--color-ink)] sm:aspect-square lg:aspect-6/5"
+              >
                 <Image
                   key={shown.src}
+                  // One frame after load, so the printed state is painted
+                  // before the transition starts — a cached photo can load
+                  // before it ever is.
+                  onLoad={() =>
+                    requestAnimationFrame(() => setDeveloped(shown.src))
+                  }
                   src={shown.src}
                   alt={shown.alt}
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 55vw"
-                  className="printed-photo object-cover"
+                  className="develop-photo object-cover"
                   style={{ objectPosition: shown.position }}
                 />
+                {/* Keyed with the photo, so a new frame starts printed rather
+                    than fading back from the last one's colour. */}
                 <div
+                  key={`tint-${shown.src}`}
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 mix-blend-multiply"
-                  style={{
-                    background: "var(--color-plate)",
-                    opacity: "var(--photo-tint-strength)",
-                  }}
+                  className="photo-tint develop-tint"
                 />
 
                 {/* Sold out is a painted band struck across the plate, not a
@@ -95,16 +110,8 @@ export function ProductBroadside({ product }: { product: Product }) {
                             alt=""
                             fill
                             sizes="92px"
-                            className={`printed-photo object-cover ${on ? "" : "opacity-55"}`}
+                            className={`object-cover ${on ? "" : "opacity-55"}`}
                             style={{ objectPosition: f.position }}
-                          />
-                          <span
-                            aria-hidden
-                            className="pointer-events-none absolute inset-0 mix-blend-multiply"
-                            style={{
-                              background: "var(--color-plate)",
-                              opacity: "var(--photo-tint-strength)",
-                            }}
                           />
                         </span>
                         <span

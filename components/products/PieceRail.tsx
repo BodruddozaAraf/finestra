@@ -271,7 +271,7 @@ export function PieceRail({
                 href={`/products/${p.id}`}
                 tabIndex={dupe ? -1 : undefined}
                 draggable={false}
-                className="reg-plate block border-[3px] border-[var(--hair)] bg-[var(--ground)]"
+                className="reg-plate reveals block border-[3px] border-[var(--hair)] bg-[var(--ground)]"
               >
                 <div className="relative aspect-4/5 overflow-hidden border-b-[3px] border-[var(--hair)] bg-[var(--color-ink)]">
                   <Image
@@ -283,14 +283,7 @@ export function PieceRail({
                     className="printed-photo object-cover"
                     style={{ objectPosition: shot.position }}
                   />
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 mix-blend-multiply"
-                    style={{
-                      background: "var(--color-plate)",
-                      opacity: "var(--photo-tint-strength)",
-                    }}
-                  />
+                  <div aria-hidden className="photo-tint" />
                   {/* Sold out is a painted band, not a grey tint. */}
                   {p.soldOut && (
                     <p className="banner absolute top-1/2 w-[140%] -translate-x-[14%] -translate-y-1/2 -rotate-[7deg] border-y-[3px] border-[var(--color-plate)] bg-[var(--color-ink)] py-2 text-center text-[0.95rem] uppercase text-[var(--color-plate)]">

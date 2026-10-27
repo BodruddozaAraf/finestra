@@ -11,7 +11,7 @@ export function ProductPlate({ product }: { product: Product }) {
   const shot = product.image;
 
   return (
-    <article className="flex h-full flex-col border-[3px] border-[var(--hair)] bg-[var(--ground)]">
+    <article className="reveals flex h-full flex-col border-[3px] border-[var(--hair)] bg-[var(--ground)]">
       {/* The photo plate opens the piece, because a thumb on a phone aims at
           the picture. It goes to the same place as the name link below, so it
           is out of the tab order rather than doubling the stop; the keyboard
@@ -29,14 +29,7 @@ export function ProductPlate({ product }: { product: Product }) {
           className="printed-photo object-cover"
           style={{ objectPosition: shot.position }}
         />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 mix-blend-multiply"
-          style={{
-            background: "var(--color-plate)",
-            opacity: "var(--photo-tint-strength)",
-          }}
-        />
+        <div aria-hidden className="photo-tint" />
 
         {/* Sold out is a painted band, not a grey tint. State is a mark. */}
         {product.soldOut && (

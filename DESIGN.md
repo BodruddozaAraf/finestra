@@ -141,8 +141,14 @@ moment:
   stops it — and can be dragged either direction: by mouse, or on touch by
   the phone's own native swipe, momentum included.
 
-Registration snap is the one interaction-driven movement: it answers a press,
-same as always.
+The piece page has the second authored moment: its photo develops out of the
+print into true colour as the page opens, and again whenever another frame is
+picked. Also CSS, also finished-by-default — reduced motion lands straight on
+colour.
+
+Registration snap answers a press. On a device with a hovering pointer, a
+plate on the shelf or in the catalogue fades from the print to its true colour
+under the pointer (or keyboard focus) and back again when it leaves.
 
 `prefers-reduced-motion: reduce` turns all three off — the hero print-in, the
 chevron crawl, and the rail's creep-and-drag system are each gated behind the
@@ -153,8 +159,11 @@ without the auto-creep or the custom drag.
 ## Photography
 
 Photographs are screened toward the two plates (`printed-photo` plus a yellow
-multiply at scope-dependent strength) so they read as printed stock rather than
-as someone else's photography. Every image resolves through `lib/images.ts`, a
+multiply, `photo-tint`, at scope-dependent strength) so they read as printed
+stock rather than as someone else's photography — but only where the photo is
+mood. A customer has to see a piece's real colour before ordering it, so the
+piece page shows every frame untreated, and shelf and catalogue plates show
+true colour on hover. Hero, diptych, and banners stay fully printed. Every image resolves through `lib/images.ts`, a
 single swap point.
 
 A piece page wants more than one frame and Finestra has photographed none of

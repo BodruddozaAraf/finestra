@@ -16,6 +16,10 @@
   --font-block: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
 
   --ease-paint: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The piece page's photo developing from print to colour: slow and even,
+     like a print coming up in the tray. */
+  --develop-duration: 2400ms;
+  --ease-develop: cubic-bezier(0.45, 0, 0.25, 1);
 }
 
 /* ------------------------------------------------------------
@@ -174,6 +178,72 @@ body {
    stock rather than as someone else's photography. */
 @utility printed-photo {
   filter: grayscale(1) contrast(1.22) brightness(var(--photo-bright));
+}
+
+/* The yellow plate laid over a printed photo. */
+@utility photo-tint {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: var(--color-plate);
+  mix-blend-mode: multiply;
+  opacity: var(--photo-tint-strength);
+}
+
+/* ---------- true colour where a customer decides ----------
+   The printed screen is mood, not product: a piece's real colour has to be
+   seen before anyone orders it. The piece page shows the photo untreated —
+   it develops out of the print as it opens — and a plate on the shelf shows
+   its true colour under a hovering pointer. Phones have no hover; a tap
+   lands on the piece page, which is in colour.
+
+   Plain classes, outside the utilities layer, so they win over
+   `printed-photo` and `photo-tint` without !important. The finished state
+   (true colour) is the default, so reduced motion lands on it directly. */
+.develop-tint {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The piece page holds its photo in print until the photo has loaded
+     (`data-developed`, set from the image's load event), then lets it go. */
+  .develops:not([data-developed]) .develop-photo {
+    filter: grayscale(1) contrast(1.22) brightness(var(--photo-bright));
+  }
+  .develops:not([data-developed]) .develop-tint {
+    opacity: var(--photo-tint-strength);
+  }
+  .develop-photo,
+  .develop-tint {
+    transition:
+      filter var(--develop-duration) var(--ease-develop) 150ms,
+      opacity var(--develop-duration) var(--ease-develop) 150ms;
+  }
+
+  .reveals .printed-photo,
+  .reveals .photo-tint {
+    transition:
+      filter 400ms var(--ease-paint),
+      opacity 400ms var(--ease-paint);
+  }
+}
+
+@media (hover: hover) {
+  .reveals:hover .printed-photo {
+    filter: none;
+  }
+  .reveals:hover .photo-tint {
+    opacity: 0;
+  }
+}
+/* Keyboard focus earns the same look as a hovering pointer. */
+.reveals:has(:focus-visible) .printed-photo,
+.reveals:focus-visible .printed-photo {
+  filter: none;
+}
+.reveals:has(:focus-visible) .photo-tint,
+.reveals:focus-visible .photo-tint {
+  opacity: 0;
 }
 
 @utility hand {
