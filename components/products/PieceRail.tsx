@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { taka, type Product } from "@/lib/catalogue";
 
 /** Creep speed, in pixels per second. Fast enough to read as motion, still
@@ -25,11 +25,12 @@ const DRAG_THRESHOLD = 6;
  * family both times, which is why it lives in one file.
  *
  * The rail creeps sideways on its own, always — the shelf never sits still.
- * The piece list is rendered twice back to back so the creep can wrap from
- * the second copy to the first with nothing to see: a true loop, not a
- * scroll that hits an end and snaps back. Nothing stops it except a hand
- * actually on the shelf: press and drag to pan it yourself, and it holds
- * still exactly as long as you're holding it.
+ * The piece list is rendered several times back to back and the rail rests
+ * in the middle run, wrapping by exactly one run whenever it leaves it, so
+ * there is nothing to see: a true loop, not a scroll that hits an end and
+ * snaps back. Nothing stops it except a hand actually on the shelf: drag it
+ * with a mouse, or swipe it on a phone, and it holds still exactly as long
+ * as you're holding it.
  */
 export function PieceRail({
   title,
@@ -41,6 +42,26 @@ export function PieceRail({
   className?: string;
 }) {
   const railRef = useRef<HTMLUListElement>(null);
+  // How many back-to-back runs of the shelf are in the markup. Three is the
+  // floor — the rail rests in the middle one, so there's a full run of room
+  // to pan either way before a wrap. A screen wider than one run needs more.
+  const [copies, setCopies] = useState(3);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail || pieces.length === 0) return;
+
+    function measure() {
+      const items = rail!.children as HTMLCollectionOf<HTMLElement>;
+      const period = items[pieces.length].offsetLeft - items[0].offsetLeft;
+      if (period > 0) {
+        setCopies(Math.max(3, 2 + Math.ceil(rail!.clientWidth / period)));
+      }
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [pieces]);
 
   useEffect(() => {
     const rail = railRef.current;
@@ -50,97 +71,127 @@ export function PieceRail({
     let raf = 0;
     let last = 0;
     let holding = false;
+    let touching = false;
     let resumeTimer: ReturnType<typeof setTimeout> | undefined;
 
-    // The list is doubled in the markup below, so half the scroll width is
-    // one full, undoubled run of the shelf — the exact step that wraps the
-    // second copy back onto the first without a seam.
-    function wrap() {
-      const setWidth = rail!.scrollWidth / 2;
-      if (setWidth > 0 && rail!.scrollLeft >= setWidth) {
-        rail!.scrollLeft -= setWidth;
-      }
+    // One run of the shelf: from the first plate to its first repeat. Not
+    // scrollWidth / copies — that would fold the rail's side padding into
+    // the step and the wrap would visibly jump by the difference.
+    function period() {
+      const items = rail!.children as HTMLCollectionOf<HTMLElement>;
+      return items[pieces.length].offsetLeft - items[0].offsetLeft;
     }
 
-    // The browser clamps scrollLeft to 0 before a negative write ever lands,
-    // so dragging backward past the start has nothing left to detect once
-    // it's on screen — the wrap has to happen on the intended value, not on
-    // whatever scrollLeft settled for after the fact.
-    function normalize(target: number, setWidth: number) {
-      if (setWidth <= 0) return target;
-      const wrapped = target % setWidth;
-      return wrapped < 0 ? wrapped + setWidth : wrapped;
+    // Keep the position inside the middle run, [P, 2P). Every run looks the
+    // same, so moving by a whole P is invisible.
+    function normalize(target: number) {
+      const p = period();
+      if (p <= 0) return target;
+      const wrapped = (target - p) % p;
+      return p + (wrapped < 0 ? wrapped + p : wrapped);
     }
+
+    // The creep's position is kept here, not read back from scrollLeft each
+    // frame: some browsers round scrollLeft to whole pixels, and at 120Hz a
+    // sub-pixel step would round away to nothing every frame.
+    let pos = normalize(rail.scrollLeft);
+    rail.scrollLeft = pos;
 
     function tick(now: number) {
       const dt = now - last;
       last = now;
       if (!holding) {
-        rail!.scrollLeft += (CREEP_SPEED * dt) / 1000;
-        wrap();
+        pos = normalize(pos + (CREEP_SPEED * dt) / 1000);
+        rail!.scrollLeft = pos;
       }
       raf = requestAnimationFrame(tick);
     }
 
-    // ---- press, drag, release: the one thing that holds the shelf still ----
+    function hold() {
+      holding = true;
+      clearTimeout(resumeTimer);
+    }
+
+    function release() {
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => {
+        holding = false;
+        pos = normalize(rail!.scrollLeft);
+        last = performance.now();
+      }, RESUME_DELAY);
+    }
+
+    // ---- touch: the phone's own scroll does the panning ----
+    // A hand-rolled drag on touch loses to the platform: a press that
+    // lingers on a plate turns into iOS's link preview or Android's context
+    // menu, which cancels the pointer stream mid-drag. Native horizontal
+    // scrolling has none of that and brings momentum with it, so on touch
+    // the rail only steps aside — it holds still from the first finger until
+    // the fling has settled.
+    function onTouchStart() {
+      touching = true;
+      hold();
+    }
+
+    function onTouchEnd() {
+      touching = false;
+      release();
+    }
+
+    // Momentum keeps scrolling after the finger lifts; every frame of it
+    // pushes the resume back, so the creep picks up from where it landed.
+    function onScroll() {
+      if (holding && !touching && pointerId === null) release();
+    }
+
+    function suppressMenuWhileTouching(e: Event) {
+      if (touching) e.preventDefault();
+    }
+
+    // ---- mouse: press, drag, release ----
     let pointerId: number | null = null;
     let startX = 0;
     let startScrollLeft = 0;
     let dragged = false;
 
     function onPointerDown(e: PointerEvent) {
+      if (e.pointerType === "touch") return;
       pointerId = e.pointerId;
       startX = e.clientX;
       startScrollLeft = rail!.scrollLeft;
       dragged = false;
-      holding = true;
-      clearTimeout(resumeTimer);
-      // The pointer can already be gone by the time this runs (e.g. a very
-      // quick tap); capture is an enhancement for tracking the drag past the
-      // rail's own edges, not a requirement for the drag to work at all.
-      try {
-        rail!.setPointerCapture(e.pointerId);
-      } catch {
-        /* no active pointer to capture — the drag still tracks via the
-           regular pointermove/pointerup listeners below */
-      }
+      hold();
     }
 
     function onPointerMove(e: PointerEvent) {
       if (pointerId === null || e.pointerId !== pointerId) return;
       const dx = e.clientX - startX;
-      if (!dragged && Math.abs(dx) > DRAG_THRESHOLD) dragged = true;
+      if (!dragged && Math.abs(dx) > DRAG_THRESHOLD) {
+        dragged = true;
+        // Capture only once it's a drag: captured from the press, the
+        // release lands on the rail rather than the plate, and a plain
+        // click never reaches the piece link.
+        try {
+          rail!.setPointerCapture(e.pointerId);
+        } catch {
+          /* no active pointer to capture — the drag still tracks via the
+             regular pointermove/pointerup listeners below */
+        }
+      }
       if (dragged) {
         e.preventDefault();
-        const setWidth = rail!.scrollWidth / 2;
-        rail!.scrollLeft = normalize(startScrollLeft - dx, setWidth);
+        const target = normalize(startScrollLeft - dx);
+        // A wrap mid-drag moves the scroll position by a whole run; carry
+        // the anchor with it so the next move doesn't jump back.
+        startScrollLeft = target + dx;
+        rail!.scrollLeft = target;
       }
     }
 
     function endHold(e: PointerEvent) {
       if (pointerId === null || e.pointerId !== pointerId) return;
-      release();
-    }
-
-    function release() {
       pointerId = null;
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(() => {
-        holding = false;
-        last = performance.now();
-      }, RESUME_DELAY);
-    }
-
-    // Mobile WebKit doesn't reliably deliver pointerup/pointercancel to this
-    // element once a touch that started here gets handed off to the page's
-    // own vertical scroll — a visitor swiping the page down past the rail
-    // routinely starts that swipe with a finger on it. Left unguarded,
-    // `holding` gets stuck true from the very first scroll and the rail never
-    // visibly moves again. The plain Touch Events (older, steadier on iOS
-    // than Pointer Events for this exact handoff) are a redundant release
-    // signal that doesn't depend on the pointer id matching.
-    function releaseOnTouchEnd() {
-      if (pointerId !== null) release();
+      release();
     }
 
     // A drag that ended past the tap threshold shouldn't also fire the
@@ -153,12 +204,15 @@ export function PieceRail({
       }
     }
 
+    rail.addEventListener("touchstart", onTouchStart, { passive: true });
+    rail.addEventListener("touchend", onTouchEnd);
+    rail.addEventListener("touchcancel", onTouchEnd);
+    rail.addEventListener("scroll", onScroll, { passive: true });
+    rail.addEventListener("contextmenu", suppressMenuWhileTouching);
     rail.addEventListener("pointerdown", onPointerDown);
     rail.addEventListener("pointermove", onPointerMove);
     rail.addEventListener("pointerup", endHold);
     rail.addEventListener("pointercancel", endHold);
-    rail.addEventListener("touchend", releaseOnTouchEnd);
-    rail.addEventListener("touchcancel", releaseOnTouchEnd);
     rail.addEventListener("click", suppressClickAfterDrag, true);
 
     last = performance.now();
@@ -167,15 +221,18 @@ export function PieceRail({
     return () => {
       cancelAnimationFrame(raf);
       clearTimeout(resumeTimer);
+      rail.removeEventListener("touchstart", onTouchStart);
+      rail.removeEventListener("touchend", onTouchEnd);
+      rail.removeEventListener("touchcancel", onTouchEnd);
+      rail.removeEventListener("scroll", onScroll);
+      rail.removeEventListener("contextmenu", suppressMenuWhileTouching);
       rail.removeEventListener("pointerdown", onPointerDown);
       rail.removeEventListener("pointermove", onPointerMove);
       rail.removeEventListener("pointerup", endHold);
       rail.removeEventListener("pointercancel", endHold);
-      rail.removeEventListener("touchend", releaseOnTouchEnd);
-      rail.removeEventListener("touchcancel", releaseOnTouchEnd);
       rail.removeEventListener("click", suppressClickAfterDrag, true);
     };
-  }, [pieces]);
+  }, [pieces, copies]);
 
   if (pieces.length === 0) return null;
 
@@ -191,18 +248,22 @@ export function PieceRail({
 
       {/* The rail starts on the container's gutter and runs off the right
           edge, so the shelf reads as longer than the screen. The list is
-          doubled — second copy hidden from assistive tech and tab order —
-          purely so the loop has a seamless second half to wrap onto. */}
+          repeated — only the middle run, where the rail rests, is exposed
+          to assistive tech and tab order — purely so the loop always has a
+          seamless run on either side to wrap onto. Touch-action is left to
+          the browser so a finger pans the rail natively; the callout is off
+          so a lingering press on a plate doesn't open a link preview. */}
       <ul
         ref={railRef}
-        className="mt-8 flex cursor-grab touch-pan-y gap-5 overflow-x-auto pb-6 pl-[max(1rem,calc((100%-1400px)/2+1.75rem))] pr-4 select-none [scrollbar-width:thin] active:cursor-grabbing sm:pr-7"
+        className="mt-8 flex cursor-grab gap-5 overflow-x-auto pb-6 pl-[max(1rem,calc((100%-1400px)/2+1.75rem))] pr-4 select-none [-webkit-touch-callout:none] [scrollbar-width:thin] active:cursor-grabbing sm:pr-7"
       >
-        {[...pieces, ...pieces].map((p, i) => {
-          const dupe = i >= pieces.length;
+        {Array.from({ length: copies }, () => pieces).flat().map((p, i) => {
+          const run = Math.floor(i / pieces.length);
+          const dupe = run !== 1;
           const shot = p.image;
           return (
             <li
-              key={`${p.id}-${dupe ? "b" : "a"}`}
+              key={`${p.id}-${run}`}
               aria-hidden={dupe || undefined}
               className="w-[74vw] shrink-0 sm:w-[320px] lg:w-[340px]"
             >

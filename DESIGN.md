@@ -134,10 +134,12 @@ moment:
   in direction from its first pass. It never touches a plate or a letterform,
   so it reads as the print feed running, not as a second hero.
 - **The shelf rail** creeps sideways on its own, always. The piece list
-  renders twice in the markup (second copy hidden from assistive tech) so the
-  loop wraps from the second run onto the first with nothing to see. It holds
-  still only while a visitor is actually pressing and dragging it — hovering
-  never stops it — and can be dragged either direction, mouse or touch.
+  renders as several back-to-back runs (only the middle one exposed to
+  assistive tech); the rail rests in the middle run and wraps by exactly one
+  run, measured plate to plate, so there is nothing to see. It holds still
+  only while a visitor is actually pressing and dragging it — hovering never
+  stops it — and can be dragged either direction: by mouse, or on touch by
+  the phone's own native swipe, momentum included.
 
 Registration snap is the one interaction-driven movement: it answers a press,
 same as always.
