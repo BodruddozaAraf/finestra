@@ -194,7 +194,7 @@ export function ProductBroadside({ product }: { product: Product }) {
               <div className="pt-8">
                 {product.soldOut ? (
                   <ContactPlate
-                    action="Ask about this piece"
+                    action="Ask about this piece on"
                     note="This one is not on the shelf at the moment. Message the shop to be told when it is back."
                   />
                 ) : (

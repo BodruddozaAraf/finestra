@@ -85,8 +85,7 @@ the filter, and one that products still point to cannot be deleted.
 
 - **Homepage hero and editorial photos** (`lib/images.ts`). These could become
   an editable "Homepage" document later if the shop wants to change them.
-- **Contact links** (`lib/contact.ts`). The WhatsApp link stays `#` until the
-  shop supplies a number.
+- **Contact links** (`lib/contact.ts`): Instagram, WhatsApp and Facebook.
 
 ## How the site reads it
 

@@ -44,14 +44,19 @@ export function LozengeLink({
   href,
   tone = "ink",
   className = "",
+  ...rest
 }: {
   children: ReactNode;
   href: string;
   tone?: Tone;
   className?: string;
-}) {
+} & Pick<ComponentProps<"a">, "target" | "rel">) {
   return (
-    <Link href={href} className={`${base} ${tones[tone]} ${className}`}>
+    <Link
+      href={href}
+      className={`${base} ${tones[tone]} ${className}`}
+      {...rest}
+    >
       {children}
     </Link>
   );

@@ -52,11 +52,12 @@ still to do. Details for each step are in the file named after it.
 
 - [ ] Invite the shop as **Administrator** (sanity.io/manage → Members).
 - [ ] Send them `05-client-guide.md` (add screenshots once the Studio is live).
-- [ ] The shop enters real products and photos, and deletes the placeholders.
+- [x] The shop enters real products and photos, and deletes the placeholders (2026-10-29).
 
 ## Phase 6: after real data is in
 
-- [ ] Remove the "Sample stock" notices on `/products` and `/products/[id]`, and "Placeholder piece…" in the product page's meta description.
+- [x] Remove the "Sample stock" notices on `/products` and `/products/[id]`, "Placeholder piece…" in the product page's meta description, and the footer's "Design prototype" line (2026-10-30).
 - [ ] After a week, check sanity.io/manage → Usage against the Free limits (01).
 - [ ] Optional: an editable "Homepage" document for the hero and editorial photos.
-- [ ] Before the public launch: Vercel Pro (Hobby is non-commercial only) and the WhatsApp number.
+- [x] WhatsApp number in `lib/contact.ts` (2026-10-30).
+- [ ] Before the public launch: Vercel Pro (Hobby is non-commercial only).

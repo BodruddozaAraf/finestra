@@ -22,8 +22,6 @@ export type Channel = {
   /** The account, where there is one to show. */
   handle: string;
   href: string;
-  /** True while the shop has not supplied the link yet. */
-  pending?: boolean;
 };
 
 export const CHANNELS: Channel[] = [
@@ -34,15 +32,12 @@ export const CHANNELS: Channel[] = [
     href: "https://www.instagram.com/finestrabangladesh",
   },
   {
-    // PENDING: the shop has not supplied a WhatsApp number. Paste the click to
-    // chat link here (https://wa.me/<country code><number>) and drop `pending`.
-    // Until then this button renders but goes nowhere, so it must not reach a
-    // live audience in this state.
+    // wa.me takes the number with the country code and without the local
+    // leading 0: 01974441415 becomes 8801974441415.
     id: "whatsapp",
     name: "WhatsApp",
-    handle: "",
-    href: "#",
-    pending: true,
+    handle: "+880 1974 441415",
+    href: "https://wa.me/8801974441415",
   },
   {
     id: "facebook",
@@ -59,8 +54,11 @@ export const CHANNEL_MARKS = {
   facebook: FacebookLogo,
 };
 
-/** Instagram. The one the product page leads with. */
-export const PRIMARY = CHANNELS[0];
+/** Instagram and WhatsApp. The pair the product page leads with. */
+export const PRIMARY = CHANNELS.slice(0, 2);
 
-/** WhatsApp and Facebook, in order. */
-export const SECONDARY = CHANNELS.slice(1);
+/** Facebook. */
+export const SECONDARY = CHANNELS.slice(2);
+
+/** Every contact link leaves the site, so it opens beside it, not over it. */
+export const OUTBOUND = { target: "_blank", rel: "noopener noreferrer" } as const;

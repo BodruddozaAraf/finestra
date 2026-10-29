@@ -27,7 +27,7 @@ export async function generateMetadata(
 
   return {
     title: `${product.name} | Finestra`,
-    description: `${product.story} ${product.material}. Placeholder piece in the Finestra Bangladesh prototype.`,
+    description: `${product.story} ${product.material}.`,
   };
 }
 
@@ -75,14 +75,6 @@ export default async function ProductPage(props: PageProps<"/products/[id]">) {
         </div>
         <Chevron />
       </section>
-
-      {/* The prototype says what it is, rather than dressing an invented price
-          as fact. */}
-      <p className="mx-auto max-w-[1400px] px-4 pt-5 text-[0.88rem] leading-relaxed sm:px-7">
-        <strong className="font-semibold">Sample stock.</strong> This piece, its
-        price, and its photographs are placeholders for this design prototype,
-        not real Finestra stock.
-      </p>
 
       <ProductBroadside product={product} />
 

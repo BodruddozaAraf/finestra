@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Chevron } from "@/components/ui/Plate";
-import { CHANNEL_MARKS, CHANNELS } from "@/lib/contact";
+import { CHANNEL_MARKS, CHANNELS, OUTBOUND } from "@/lib/contact";
 
 export function FooterPlate() {
   return (
@@ -41,6 +41,7 @@ export function FooterPlate() {
               <a
                 key={c.id}
                 href={c.href}
+                {...OUTBOUND}
                 className="flex items-center gap-2 text-[0.95rem]"
               >
                 <Mark size={22} weight="fill" />
@@ -52,8 +53,7 @@ export function FooterPlate() {
       </div>
 
       <div className="border-t-[3px] border-[var(--color-ink)] px-4 py-4 text-[0.78rem] sm:px-7">
-        Design prototype. Products, prices, and photography on this site are
-        placeholders.
+        © {new Date().getFullYear()} Finestra Bangladesh
       </div>
     </footer>
   );

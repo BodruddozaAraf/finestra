@@ -45,14 +45,11 @@ the real audience at it.
 
 ### Loose ends before going live
 
-- **The WhatsApp link in `lib/contact.ts` is still `#`.** The client has not
-  supplied a number, so that button renders but goes nowhere. Do not point a
-  live audience at the site until it is filled in.
-- No real product or catalogue data exists yet. See `PRODUCT.md` →
-  Capabilities and Constraints.
-- The catalogue is moving into Sanity on the `sanity-backend` branch. Until
-  that branch's setup is finished, `main` still serves the hard-coded
-  placeholder catalogue. See `docs/sanity/`.
+- The catalogue lives in Sanity and holds the shop's real products since
+  2026-10-29. Remaining launch steps are tracked in
+  `docs/sanity/06-checklist.md`.
+- The homepage hero and editorial photos (`lib/images.ts`) are still Unsplash
+  placeholders.
 
 ## Docs map
 
