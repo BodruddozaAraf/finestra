@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ContactPlate } from "./ContactPlate";
+import { FrameRail } from "./FrameRail";
 import { taka, type Product } from "@/lib/catalogue";
 
 /**
@@ -38,6 +39,9 @@ export function ProductBroadside({ product }: { product: Product }) {
     g.values.flatMap((v) => (v.image ? [v.image] : [])),
   );
   const frames = [product.image, ...product.frames, ...optionPhotos];
+  // The rail shows only the product's own photos. Option photos are reached
+  // through their chips, so listing them again would only double the rail.
+  const railFrames = frames.slice(0, 1 + product.frames.length);
 
   const [frame, setFrame] = useState(0);
 
@@ -64,12 +68,14 @@ export function ProductBroadside({ product }: { product: Product }) {
     <section className="bg-[var(--ground)] px-4 py-10 sm:px-7 sm:py-14">
       <div className="mx-auto max-w-[1400px]">
         <div className="border-[3px] border-[var(--hair)]">
-          <div className="grid lg:grid-cols-[1fr_0.82fr]">
+          {/* minmax(0, …) at every width, so a long frame rail scrolls inside
+              its column instead of widening it past the screen. */}
+          <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)]">
             {/* The frames. */}
             <div className="border-b-[3px] border-[var(--hair)] lg:border-b-0 lg:border-r-[3px]">
               <div
                 data-developed={developed === shown.src || undefined}
-                className="develops relative aspect-4/5 overflow-hidden bg-[var(--color-ink)] sm:aspect-square lg:aspect-6/5"
+                className="develops relative aspect-4/5 overflow-hidden bg-[var(--color-ink)] sm:aspect-square lg:aspect-6/5 lg:max-h-[75vh] lg:w-full"
               >
                 <Image
                   key={shown.src}
@@ -106,39 +112,8 @@ export function ProductBroadside({ product }: { product: Product }) {
                 )}
               </div>
 
-              {/* Frame rail. The chosen frame is marked with an ink underscore,
-                  the same mark the nav uses for the current route. */}
-              {frames.length > 1 && (
-                <div className="flex gap-3 border-t-[3px] border-[var(--hair)] px-4 py-4 sm:px-5">
-                  {frames.map((f, i) => {
-                    const on = i === frame;
-                    return (
-                      <button
-                        key={`${i}-${f.src}`}
-                        type="button"
-                        onClick={() => setFrame(i)}
-                        aria-pressed={on}
-                        aria-label={`Frame ${i + 1} of ${frames.length}: ${f.alt}`}
-                        className="block w-[76px] shrink-0 sm:w-[92px]"
-                      >
-                        <span className="relative block aspect-square overflow-hidden border-[3px] border-[var(--hair)] bg-[var(--color-ink)]">
-                          <Image
-                            src={f.src}
-                            alt=""
-                            fill
-                            sizes="92px"
-                            className={`object-cover ${on ? "" : "opacity-55"}`}
-                            style={{ objectPosition: f.position }}
-                          />
-                        </span>
-                        <span
-                          aria-hidden
-                          className={`mt-[6px] block h-[5px] ${on ? "bg-[var(--ink)]" : "bg-transparent"}`}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
+              {railFrames.length > 1 && (
+                <FrameRail frames={railFrames} frame={frame} onSelect={setFrame} />
               )}
             </div>
 

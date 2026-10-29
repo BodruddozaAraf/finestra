@@ -24,7 +24,8 @@ const DRAG_THRESHOLD = 6;
  * shelf and a product page uses it for the rest of the category; it is the same
  * family both times, which is why it lives in one file.
  *
- * The rail creeps sideways on its own, always — the shelf never sits still.
+ * The rail creeps sideways on its own whenever the shelf is wider than the
+ * screen. A shelf short enough to fit sits still, shown once.
  * The product list is rendered several times back to back and the rail rests
  * in the middle run, wrapping by exactly one run whenever it leaves it, so
  * there is nothing to see: a true loop, not a scroll that hits an end and
@@ -43,8 +44,10 @@ export function ProductRail({
 }) {
   const railRef = useRef<HTMLUListElement>(null);
   // How many back-to-back runs of the shelf are in the markup. Three is the
-  // floor — the rail rests in the middle one, so there's a full run of room
-  // to pan either way before a wrap. A screen wider than one run needs more.
+  // floor for a loop — the rail rests in the middle one, so there's a full
+  // run of room to pan either way before a wrap. A screen wider than one run
+  // needs more. A shelf that fits on the screen in one run gets exactly one,
+  // standing still: looping it would only show the same few plates on repeat.
   const [copies, setCopies] = useState(3);
 
   useEffect(() => {
@@ -53,10 +56,23 @@ export function ProductRail({
 
     function measure() {
       const items = rail!.children as HTMLCollectionOf<HTMLElement>;
-      const period = items[products.length].offsetLeft - items[0].offsetLeft;
-      if (period > 0) {
-        setCopies(Math.max(3, 2 + Math.ceil(rail!.clientWidth / period)));
-      }
+      const style = getComputedStyle(rail!);
+      // One run, measured off the first run's last plate so it works with a
+      // single copy as well as several.
+      const last = items[products.length - 1];
+      const period =
+        last.offsetLeft +
+        last.offsetWidth +
+        parseFloat(style.columnGap) -
+        items[0].offsetLeft;
+      const room =
+        rail!.clientWidth -
+        parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight);
+      if (period <= 0) return;
+      setCopies(
+        period <= room ? 1 : Math.max(3, 2 + Math.ceil(rail!.clientWidth / period)),
+      );
     }
     measure();
     window.addEventListener("resize", measure);
@@ -65,7 +81,7 @@ export function ProductRail({
 
   useEffect(() => {
     const rail = railRef.current;
-    if (!rail || products.length === 0) return;
+    if (!rail || products.length === 0 || copies === 1) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let raf = 0;
@@ -79,7 +95,10 @@ export function ProductRail({
     // the step and the wrap would visibly jump by the difference.
     function period() {
       const items = rail!.children as HTMLCollectionOf<HTMLElement>;
-      return items[products.length].offsetLeft - items[0].offsetLeft;
+      // Missing for the frame between dropping to a single run and this
+      // effect being cleaned up; normalize leaves the position alone then.
+      const repeat = items[products.length];
+      return repeat ? repeat.offsetLeft - items[0].offsetLeft : 0;
     }
 
     // Keep the position inside the middle run, [P, 2P). Every run looks the
@@ -255,11 +274,11 @@ export function ProductRail({
           so a lingering press on a plate doesn't open a link preview. */}
       <ul
         ref={railRef}
-        className="mt-8 flex cursor-grab gap-5 overflow-x-auto pb-6 pl-[max(1rem,calc((100%-1400px)/2+1.75rem))] pr-4 select-none [-webkit-touch-callout:none] [scrollbar-width:thin] active:cursor-grabbing sm:pr-7"
+        className={`mt-8 flex gap-5 overflow-x-auto pb-6 pl-[max(1rem,calc((100%-1400px)/2+1.75rem))] pr-4 select-none [-webkit-touch-callout:none] [scrollbar-width:thin] sm:pr-7 ${copies > 1 ? "cursor-grab active:cursor-grabbing" : ""}`}
       >
         {Array.from({ length: copies }, () => products).flat().map((p, i) => {
           const run = Math.floor(i / products.length);
-          const dupe = run !== 1;
+          const dupe = copies > 1 && run !== 1;
           const shot = p.image;
           return (
             <li

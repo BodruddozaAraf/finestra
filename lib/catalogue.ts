@@ -67,8 +67,19 @@ export type Product = {
 
 export const taka = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
-/** Other products from the same category, for the rail at the foot of a product page. */
-export const alongside = (product: Product, products: Product[], count = 4) =>
-  products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, count);
+/**
+ * Other products for the rail at the foot of a product page: the same category
+ * first, then the same collection, then the rest of the shelf, so a thin
+ * category still fills the rail.
+ */
+export const alongside = (product: Product, products: Product[], count = 6) => {
+  const others = products.filter((p) => p.id !== product.id);
+  const rank = (p: Product) =>
+    p.category === product.category
+      ? 0
+      : product.collection && p.collection === product.collection
+        ? 1
+        : 2;
+  // Array sort is stable, so each rank keeps the shelf's newest-first order.
+  return others.sort((a, b) => rank(a) - rank(b)).slice(0, count);
+};

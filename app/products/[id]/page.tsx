@@ -38,6 +38,10 @@ export default async function ProductPage(props: PageProps<"/products/[id]">) {
   if (!product) notFound();
 
   const rest = alongside(product, products);
+  // Named for the category only while the rail holds nothing else.
+  const restTitle = rest.every((p) => p.category === product.category)
+    ? `The rest of the ${product.categoryLabel.toLowerCase()}`
+    : "More from the shelf";
 
   return (
     <main>
@@ -83,7 +87,7 @@ export default async function ProductPage(props: PageProps<"/products/[id]">) {
       <ProductBroadside product={product} />
 
       <ProductRail
-        title={`The rest of the ${product.categoryLabel.toLowerCase()}`}
+        title={restTitle}
         products={rest}
       />
 
