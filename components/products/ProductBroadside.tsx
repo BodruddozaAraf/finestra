@@ -173,11 +173,18 @@ export function ProductBroadside({ product }: { product: Product }) {
                   </p>
                   <ul className="mt-2 flex flex-wrap gap-2">
                     {group.values.map((v) => {
+                      const at = v.image ? frames.indexOf(v.image) : -1;
+                      const on = at !== -1 && at === frame;
+                      // Filled when chosen. A sold-out chip is struck through
+                      // and faded, but not while filled: the fade would wash
+                      // the filled label out.
                       const chip = [
                         "block rounded-full border-[3px] px-4 py-2 text-[0.88rem] tabular-nums",
                         v.soldOut
-                          ? "border-dashed border-[var(--hair)] line-through opacity-55"
+                          ? "border-dashed border-[var(--hair)] line-through"
                           : "border-[var(--hair)]",
+                        v.soldOut && !on ? "opacity-55" : "",
+                        on ? "bg-[var(--ink)] text-[var(--ground)]" : "",
                       ];
                       const label = (
                         <>
@@ -192,18 +199,13 @@ export function ProductBroadside({ product }: { product: Product }) {
                           </li>
                         );
                       }
-                      const at = frames.indexOf(v.image);
-                      const on = at === frame;
                       return (
                         <li key={v.label}>
                           <button
                             type="button"
                             onClick={() => setFrame(at)}
                             aria-pressed={on}
-                            className={[
-                              ...chip,
-                              on ? "bg-[var(--ink)] text-[var(--ground)]" : "",
-                            ].join(" ")}
+                            className={chip.join(" ")}
                           >
                             {label}
                           </button>
