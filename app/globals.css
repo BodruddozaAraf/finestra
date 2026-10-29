@@ -87,6 +87,11 @@
 html {
   -webkit-text-size-adjust: 100%;
   scrollbar-color: var(--ink) var(--color-plate);
+  /* The page still scrolls; it just shows no bar down the side. */
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
