@@ -138,8 +138,15 @@ async function main() {
     })
   }
 
+  // Last, so the products that pointed at a retired category have already
+  // been moved off it when the transaction lands.
+  RETIRED_IDS.forEach((id) => tx.delete(id))
+
   await tx.commit()
-  console.log(`\nSeeded ${CATEGORIES.length} categories and ${CATALOGUE.length} products.`)
+  console.log(
+    `\nSeeded ${CATEGORIES.length} categories, ${COLLECTIONS.length} collections, ` +
+      `and ${CATALOGUE.length} products.`,
+  )
 }
 
 main().catch((err) => {
