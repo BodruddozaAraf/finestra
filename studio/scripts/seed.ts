@@ -15,9 +15,12 @@ import {API_VERSION} from '../env'
 import {
   CATALOGUE,
   CATEGORIES,
+  COLLECTIONS,
   PRODUCT_FRAMES,
   PRODUCT_SHOTS,
+  RETIRED_IDS,
   frameId,
+  type PlaceholderProduct,
 } from './placeholder-catalogue'
 
 const client = getCliClient({apiVersion: API_VERSION})
@@ -57,6 +60,30 @@ const image = async (photo: Photo, withKey = false) => ({
   alt: photo.alt,
 })
 
+/** Array items need a stable _key; the label is unique within its list. */
+const key = (label: string) => label.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
+const optionGroups = (options: PlaceholderProduct['options']) =>
+  Promise.all(
+    options.map(async (group) => ({
+      _type: 'optionGroup' as const,
+      _key: key(group.label),
+      label: group.label,
+      values: await Promise.all(
+        group.values.map(async (v) => {
+          const value = typeof v === 'string' ? {label: v} : v
+          return {
+            _type: 'optionValue' as const,
+            _key: key(value.label),
+            label: value.label,
+            soldOut: value.soldOut ?? false,
+            ...(value.image ? {image: await image(value.image)} : {}),
+          }
+        }),
+      ),
+    })),
+  )
+
 async function main() {
   const tx = client.transaction()
 
@@ -64,6 +91,17 @@ async function main() {
     tx.createOrReplace({
       _id: `category-${c.id}`,
       _type: 'category',
+      label: c.label,
+      slug: {_type: 'slug', current: c.id},
+      note: c.note,
+      order: (i + 1) * 10,
+    })
+  })
+
+  COLLECTIONS.forEach((c, i) => {
+    tx.createOrReplace({
+      _id: `collection-${c.id}`,
+      _type: 'collection',
       label: c.label,
       slug: {_type: 'slug', current: c.id},
       note: c.note,
@@ -86,11 +124,13 @@ async function main() {
       name: p.name,
       slug: {_type: 'slug', current: p.id},
       category: {_type: 'reference', _ref: `category-${p.category}`},
+      ...(p.collection
+        ? {collection: {_type: 'reference', _ref: `collection-${p.collection}`}}
+        : {}),
       price: p.price,
       material: p.material,
       story: p.story,
-      variantLabel: p.variantLabel,
-      variants: p.variants,
+      optionGroups: await optionGroups(p.options),
       soldOut: p.soldOut ?? false,
       onShelf: p.onShelf ?? false,
       mainImage: await image(shot),

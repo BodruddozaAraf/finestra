@@ -23,6 +23,22 @@ export type Photo = {
 
 export type CategoryInfo = { id: Category; label: string; note: string };
 
+/** A collection's web-address slug, e.g. "anime". Collections cut across categories. */
+export type Collection = string;
+
+export type CollectionInfo = { id: Collection; label: string; note: string };
+
+/** One choice within a group, e.g. "Black" under Colour. */
+export type OptionValue = {
+  label: string;
+  /** The product in this option, when the choice changes how it looks. */
+  image?: Photo;
+  soldOut: boolean;
+};
+
+/** A named set of choices, e.g. Colour: Silver, Black. A product has up to two. */
+export type OptionGroup = { label: string; values: OptionValue[] };
+
 /** Mirrors the `product` schema in studio/schemaTypes/product.ts. */
 export type Product = {
   /** The web-address slug, used in /products/[id]. */
@@ -30,14 +46,16 @@ export type Product = {
   name: string;
   category: Category;
   categoryLabel: string;
+  /** Absent for classic pieces that belong to no collection. */
+  collection?: Collection;
+  collectionLabel?: string;
   /** Bangladeshi Taka. */
   price: number;
   material: string;
   /** One line on what the product is. */
   story: string;
-  /** Variant label shown above the chips, e.g. "Size" or "Length". */
-  variantLabel: string;
-  variants: string[];
+  /** Empty for one-size or adjustable pieces. */
+  options: OptionGroup[];
   soldOut: boolean;
   /** Marks the products the homepage pulls onto the shelf rail. */
   onShelf: boolean;

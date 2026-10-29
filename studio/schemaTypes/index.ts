@@ -1,4 +1,5 @@
 import {category} from './category'
-import {product} from './product'
+import {collection} from './collection'
+import {optionGroup, optionValue, product} from './product'
 
-export const schemaTypes = [product, category]
+export const schemaTypes = [product, category, collection, optionGroup, optionValue]

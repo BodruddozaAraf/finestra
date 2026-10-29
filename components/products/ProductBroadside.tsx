@@ -22,10 +22,22 @@ import { taka, type Product } from "@/lib/catalogue";
  * on load is the photo developing out of the print into colour, once the
  * photo itself has arrived.
  */
+/** Two to five specs: category, collection, material, and up to two option groups. */
+const SPEC_COLUMNS: Record<number, string> = {
+  2: "lg:grid-cols-2",
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-4",
+  5: "lg:grid-cols-5",
+};
+
 export function ProductBroadside({ product }: { product: Product }) {
   // The product's own shot leads; the further photos follow in the order the
-  // shop set in the Studio.
-  const frames = [product.image, ...product.frames];
+  // shop set in the Studio, then the photos of individual options (the black
+  // version, say), so choosing an option is just choosing its frame.
+  const optionPhotos = product.options.flatMap((g) =>
+    g.values.flatMap((v) => (v.image ? [v.image] : [])),
+  );
+  const frames = [product.image, ...product.frames, ...optionPhotos];
 
   const [frame, setFrame] = useState(0);
 
@@ -38,8 +50,14 @@ export function ProductBroadside({ product }: { product: Product }) {
 
   const specs = [
     { label: "Category", value: product.categoryLabel },
+    ...(product.collectionLabel
+      ? [{ label: "Collection", value: product.collectionLabel }]
+      : []),
     { label: "Material", value: product.material },
-    { label: product.variantLabel, value: product.variants.join(", ") },
+    ...product.options.map((g) => ({
+      label: g.label,
+      value: g.values.map((v) => v.label).join(", "),
+    })),
   ];
 
   return (
@@ -144,22 +162,57 @@ export function ProductBroadside({ product }: { product: Product }) {
 
               {/* What the product comes in. Information, not a control: the
                   site is telling the customer, not taking an order, so there
-                  is nothing to choose and nothing to get wrong. */}
-              <div className="mt-7">
-                <p className="text-[0.78rem] uppercase tracking-[0.04em] opacity-70">
-                  {product.variantLabel}
-                </p>
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {product.variants.map((v) => (
-                    <li
-                      key={v}
-                      className="rounded-full border-[3px] border-[var(--hair)] px-4 py-2 text-[0.88rem] tabular-nums"
-                    >
-                      {v}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                  is nothing to choose and nothing to get wrong. The one thing
+                  an option does is show its own photo, when it has one. A
+                  sold-out option is struck through, the same mark-not-colour
+                  rule as the sold-out band. */}
+              {product.options.map((group) => (
+                <div key={group.label} className="mt-7">
+                  <p className="text-[0.78rem] uppercase tracking-[0.04em] opacity-70">
+                    {group.label}
+                  </p>
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {group.values.map((v) => {
+                      const chip = [
+                        "block rounded-full border-[3px] px-4 py-2 text-[0.88rem] tabular-nums",
+                        v.soldOut
+                          ? "border-dashed border-[var(--hair)] line-through opacity-55"
+                          : "border-[var(--hair)]",
+                      ];
+                      const label = (
+                        <>
+                          {v.label}
+                          {v.soldOut && <span className="sr-only"> (sold out)</span>}
+                        </>
+                      );
+                      if (!v.image) {
+                        return (
+                          <li key={v.label} className={chip.join(" ")}>
+                            {label}
+                          </li>
+                        );
+                      }
+                      const at = frames.indexOf(v.image);
+                      const on = at === frame;
+                      return (
+                        <li key={v.label}>
+                          <button
+                            type="button"
+                            onClick={() => setFrame(at)}
+                            aria-pressed={on}
+                            className={[
+                              ...chip,
+                              on ? "bg-[var(--ink)] text-[var(--ground)]" : "",
+                            ].join(" ")}
+                          >
+                            {label}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
 
               <div className="pt-8">
                 {product.soldOut ? (
@@ -177,7 +230,9 @@ export function ProductBroadside({ product }: { product: Product }) {
           {/* The specification band, inside the same frame. The cells are set
               in a 3px ink gap rather than given their own borders, so the
               keylines between them land correctly at every breakpoint. */}
-          <dl className="grid gap-[3px] border-t-[3px] border-[var(--hair)] bg-[var(--hair)] sm:grid-cols-2 lg:grid-cols-4">
+          <dl
+            className={`grid gap-[3px] border-t-[3px] border-[var(--hair)] bg-[var(--hair)] sm:grid-cols-2 ${SPEC_COLUMNS[specs.length] ?? "lg:grid-cols-4"}`}
+          >
             {specs.map((s) => (
               <div
                 key={s.label}

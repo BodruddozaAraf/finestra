@@ -10,17 +10,30 @@
  * Finestra has not photographed yet.
  */
 
-type Category = "rings" | "bracelets" | "pendants" | "anime";
+const CDN = "https://images.unsplash.com/";
+
+function shot(slug: string, w = 1100) {
+  return `${CDN}${slug}?auto=format&fit=crop&w=${w}&q=72`;
+}
+
+type Category = "rings" | "bracelets" | "pendants" | "key-rings";
+
+type Collection = "anime";
+
+/** A plain option, or one with its own photo or its own sold-out mark. */
+type PlaceholderOption =
+  | string
+  | { label: string; soldOut?: boolean; image?: { src: string; alt: string } };
 
 export type PlaceholderProduct = {
   id: string;
   name: string;
   category: Category;
+  collection?: Collection;
   price: number;
   material: string;
   story: string;
-  variantLabel: string;
-  variants: string[];
+  options: { label: string; values: PlaceholderOption[] }[];
   soldOut?: boolean;
   onShelf?: boolean;
 };
@@ -29,7 +42,22 @@ export const CATEGORIES: { id: Category; label: string; note: string }[] = [
   { id: "rings", label: "Rings", note: "Signets, bands, stone settings" },
   { id: "bracelets", label: "Bracelets", note: "Chain, cord, and cuff" },
   { id: "pendants", label: "Pendants", note: "Cords and chains" },
-  { id: "anime", label: "Anime", note: "Charms, keyrings, stands" },
+  { id: "key-rings", label: "Key Rings", note: "For keys and bag straps" },
+];
+
+export const COLLECTIONS: { id: Collection; label: string; note: string }[] = [
+  { id: "anime", label: "Anime", note: "Rings and key rings for fans" },
+];
+
+/**
+ * Documents earlier versions of this catalogue created and this one no longer
+ * has. The seed deletes them, so the Anime category can go now that Anime is a
+ * collection.
+ */
+export const RETIRED_IDS = [
+  "product-anime-stand",
+  "product-anime-figure",
+  "category-anime",
 ];
 
 export const CATALOGUE: PlaceholderProduct[] = [
@@ -41,8 +69,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "925 silver",
     story:
       "A broad flat face over a deep bezel, cut so the shoulders stay low against the finger.",
-    variantLabel: "Size",
-    variants: ["17mm", "18mm", "19mm", "20mm", "21mm"],
+    options: [{ label: "Size", values: ["17mm", "18mm", "19mm", "20mm", "21mm"] }],
     onShelf: true,
   },
   {
@@ -53,8 +80,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "925 silver, set of three",
     story:
       "Three unmarked bands, meant to be stacked on one finger or split across both hands.",
-    variantLabel: "Size",
-    variants: ["17mm", "18mm", "19mm", "20mm"],
+    options: [{ label: "Size", values: ["17mm", "18mm", "19mm", "20mm"] }],
     onShelf: true,
   },
   {
@@ -65,8 +91,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Matte steel, stone inlay",
     story:
       "A dark stone set into a squared channel, with the metal left matte so the stone does the talking.",
-    variantLabel: "Size",
-    variants: ["18mm", "19mm", "20mm", "21mm"],
+    options: [{ label: "Size", values: ["18mm", "19mm", "20mm", "21mm"] }],
   },
   {
     id: "ring-inked",
@@ -76,8 +101,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Brushed steel",
     story:
       "One wide unbroken face, brushed rather than polished, so it sits beside a tattooed hand without competing with it.",
-    variantLabel: "Size",
-    variants: ["19mm", "20mm", "21mm", "22mm"],
+    options: [{ label: "Size", values: ["19mm", "20mm", "21mm", "22mm"] }],
   },
   {
     id: "ring-hammered",
@@ -87,8 +111,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "925 silver",
     story:
       "Worked by hand across the whole face, so the light breaks differently on every band.",
-    variantLabel: "Size",
-    variants: ["17mm", "18mm", "19mm", "20mm", "21mm"],
+    options: [{ label: "Size", values: ["17mm", "18mm", "19mm", "20mm", "21mm"] }],
     soldOut: true,
   },
   {
@@ -99,8 +122,41 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Surgical steel",
     story:
       "The plain one. Thin, square edged, and built to be forgotten about by the second day.",
-    variantLabel: "Size",
-    variants: ["18mm", "19mm", "20mm", "21mm", "22mm"],
+    options: [
+      {
+        label: "Colour",
+        values: [
+          {
+            label: "Silver",
+            image: {
+              src: shot("photo-1689287428894-9b52d1534a25", 700),
+              alt: "A plain steel ring photographed on a table.",
+            },
+          },
+          {
+            label: "Black",
+            soldOut: true,
+            image: {
+              src: shot("photo-1760088348194-a5ac70a8aa9f", 700),
+              alt: "A black ring with pale flecks resting on a grey surface.",
+            },
+          },
+        ],
+      },
+      { label: "Size", values: ["18mm", "19mm", "20mm", "21mm", "22mm"] },
+    ],
+  },
+  {
+    id: "ring-cursed-seal",
+    name: "Cursed Seal Ring",
+    category: "rings",
+    collection: "anime",
+    price: 890,
+    material: "Stainless steel",
+    story:
+      "A sealing sigil worked into the whole face, for the fan who wants it on the hand, not on a shelf.",
+    options: [{ label: "Size", values: ["8", "9", "10"] }],
+    onShelf: true,
   },
   {
     id: "brac-cuban",
@@ -110,8 +166,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Steel, gold tone",
     story:
       "Tight links and a box clasp that closes flush, so nothing catches on a sleeve.",
-    variantLabel: "Length",
-    variants: ["19cm", "20cm", "21cm"],
+    options: [{ label: "Length", values: ["19cm", "20cm", "21cm"] }],
     onShelf: true,
   },
   {
@@ -122,8 +177,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "925 silver",
     story:
       "A single heavy bar closed with a screw pin, borrowed straight from a boat shackle.",
-    variantLabel: "Length",
-    variants: ["19cm", "20cm", "21cm", "22cm"],
+    options: [{ label: "Length", values: ["19cm", "20cm", "21cm", "22cm"] }],
     onShelf: true,
   },
   {
@@ -134,8 +188,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Waxed cord, steel clasp",
     story:
       "Four waxed cords gathered on one clasp, so the whole stack goes on in a single motion.",
-    variantLabel: "Length",
-    variants: ["Adjustable"],
+    options: [],
   },
   {
     id: "brac-flat-chain",
@@ -145,8 +198,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "925 silver",
     story:
       "A flat woven chain that lies against the wrist instead of rolling around it.",
-    variantLabel: "Length",
-    variants: ["19cm", "20cm", "21cm"],
+    options: [{ label: "Length", values: ["19cm", "20cm", "21cm"] }],
   },
   {
     id: "brac-beaded",
@@ -156,8 +208,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Stone beads, elastic",
     story:
       "Matte stone on elastic, cut small enough to disappear under a shirt cuff.",
-    variantLabel: "Length",
-    variants: ["18cm", "19cm", "20cm"],
+    options: [{ label: "Length", values: ["18cm", "19cm", "20cm"] }],
   },
   {
     id: "pend-anchor",
@@ -167,8 +218,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Steel pendant, waxed cord",
     story:
       "A cast anchor on waxed cord, hung short so it sits at the collarbone rather than on the chest.",
-    variantLabel: "Cord",
-    variants: ["50cm", "55cm", "60cm"],
+    options: [{ label: "Cord", values: ["50cm", "55cm", "60cm"] }],
     onShelf: true,
   },
   {
@@ -178,8 +228,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     price: 940,
     material: "Blackened steel, cord",
     story: "The same anchor, blackened, for wearing against a dark shirt.",
-    variantLabel: "Cord",
-    variants: ["50cm", "55cm", "60cm"],
+    options: [{ label: "Cord", values: ["50cm", "55cm", "60cm"] }],
   },
   {
     id: "pend-jade",
@@ -188,8 +237,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     price: 1120,
     material: "Stone, braided cord",
     story: "A single polished drop on braided cord, with no metal in sight.",
-    variantLabel: "Cord",
-    variants: ["50cm", "60cm"],
+    options: [{ label: "Cord", values: ["50cm", "60cm"] }],
   },
   {
     id: "pend-chain",
@@ -199,8 +247,7 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "925 silver",
     story:
       "A fine rope chain that works on its own, or as the carrier for anything else here.",
-    variantLabel: "Chain",
-    variants: ["45cm", "50cm", "55cm", "60cm"],
+    options: [{ label: "Chain", values: ["45cm", "50cm", "55cm", "60cm"] }],
   },
   {
     id: "pend-cuban-set",
@@ -210,74 +257,44 @@ export const CATALOGUE: PlaceholderProduct[] = [
     material: "Steel, gold tone",
     story:
       "The heavy one. Wide flat links, with weight you notice the moment it goes on.",
-    variantLabel: "Chain",
-    variants: ["50cm", "55cm", "60cm"],
+    options: [{ label: "Chain", values: ["50cm", "55cm", "60cm"] }],
     onShelf: true,
   },
   {
     id: "anime-keyring",
     name: "Shinobi Keyring",
-    category: "anime",
+    category: "key-rings",
+    collection: "anime",
     price: 340,
     material: "Enamel charm, steel ring",
     story: "An enamelled charm on a split ring, sized for keys or a bag strap.",
-    variantLabel: "Finish",
-    variants: ["Enamel", "Matte"],
+    options: [{ label: "Finish", values: ["Enamel", "Matte"] }],
     onShelf: true,
   },
   {
     id: "anime-acrylic",
     name: "Kitsune Mask Charm",
-    category: "anime",
+    category: "key-rings",
+    collection: "anime",
     price: 290,
     material: "Printed acrylic",
     story:
       "A printed mask charm, cut to its own outline rather than dropped into a rectangle.",
-    variantLabel: "Finish",
-    variants: ["Gloss", "Holo"],
+    options: [{ label: "Finish", values: ["Gloss", "Holo"] }],
     onShelf: true,
   },
   {
     id: "anime-charm",
     name: "Ronin Bag Charm",
-    category: "anime",
+    category: "key-rings",
+    collection: "anime",
     price: 380,
     material: "Printed acrylic, clasp",
     story:
       "A printed charm on a lobster clasp, for a bag strap rather than a keyring.",
-    variantLabel: "Finish",
-    variants: ["Gloss", "Holo"],
-  },
-  {
-    id: "anime-stand",
-    name: "Desk Stand Charm",
-    category: "anime",
-    price: 450,
-    material: "Acrylic, weighted base",
-    story:
-      "A standing cut-out on a weighted base, made for a desk instead of a pocket.",
-    variantLabel: "Finish",
-    variants: ["Clear", "Frosted"],
-  },
-  {
-    id: "anime-figure",
-    name: "Sitting Figure",
-    category: "anime",
-    price: 860,
-    material: "Painted resin",
-    story:
-      "A seated figure, finished by hand, meant to be looked at rather than carried around.",
-    variantLabel: "Pose",
-    variants: ["Seated"],
-    soldOut: true,
+    options: [{ label: "Finish", values: ["Gloss", "Holo"] }],
   },
 ];
-
-const CDN = "https://images.unsplash.com/";
-
-function shot(slug: string, w = 1100) {
-  return `${CDN}${slug}?auto=format&fit=crop&w=${w}&q=72`;
-}
 
 /**
  * The photograph behind a URL, independent of the width it was asked for, so
@@ -371,6 +388,10 @@ export const PRODUCT_SHOTS: Record<string, { src: string; alt: string }> = {
     src: shot("photo-1678869520767-6ecd4bc729fe", 700),
     alt: "A man in a black shirt wearing a heavy gold-toned chain.",
   },
+  "ring-cursed-seal": {
+    src: shot("photo-1651752090085-50375d90bf8b", 700),
+    alt: "A close view of a textured metal ring.",
+  },
   "anime-keyring": {
     src: shot("photo-1727886806154-e7506c9fab71", 700),
     alt: "A keychain with a cartoon character charm hanging from it.",
@@ -382,14 +403,6 @@ export const PRODUCT_SHOTS: Record<string, { src: string; alt: string }> = {
   "anime-charm": {
     src: shot("photo-1741294830180-4bfbd8ca2c17", 700),
     alt: "An anime character keychain photographed close up.",
-  },
-  "anime-stand": {
-    src: shot("photo-1741980983756-2f185f15e480", 700),
-    alt: "An anime character keychain propped on a small stand.",
-  },
-  "anime-figure": {
-    src: shot("photo-1765708180211-a6e6bf7f7818", 700),
-    alt: "A seated anime action figure on a plain surface.",
   },
 };
 
@@ -425,7 +438,7 @@ export const PRODUCT_FRAMES: Record<string, { src: string; alt: string }[]> = {
     },
     HERO_PORTRAIT,
   ],
-  anime: [
+  "key-rings": [
     EDITORIAL.character,
     {
       src: shot("photo-1741980983756-2f185f15e480", 900),

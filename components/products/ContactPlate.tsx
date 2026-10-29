@@ -14,7 +14,7 @@ import { CHANNEL_MARKS, PRIMARY, SECONDARY } from "@/lib/contact";
  */
 export function ContactPlate({
   action = `Order on ${PRIMARY.name}`,
-  note = "Send the shop the name of the piece and the size you want.",
+  note = "Send the shop the name of the piece and the options you want.",
   className = "",
 }: {
   action?: string;

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Catalogue } from "@/components/products/Catalogue";
+import { Catalogue, type Filter } from "@/components/products/Catalogue";
 import { Chevron } from "@/components/ui/Plate";
-import type { Category } from "@/lib/catalogue";
 import { getCatalogue } from "@/lib/sanity";
 
 export const metadata: Metadata = {
@@ -10,19 +9,20 @@ export const metadata: Metadata = {
     "Rings, bracelets, pendants, and anime pieces from Finestra Bangladesh.",
 };
 
-type Filter = Category | "all";
-
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; collection?: string }>;
 }) {
-  const [{ category }, { categories, products }] = await Promise.all([
-    searchParams,
-    getCatalogue(),
-  ]);
-  const valid = categories.some((c) => c.id === category);
-  const initialCategory: Filter = valid ? (category as Category) : "all";
+  const [{ category, collection }, { categories, collections, products }] =
+    await Promise.all([searchParams, getCatalogue()]);
+
+  // An unknown slug, from an old link or a typo, opens the whole shelf.
+  const initialFilter: Filter = categories.some((c) => c.id === category)
+    ? { kind: "category", id: category! }
+    : collections.some((c) => c.id === collection)
+      ? { kind: "collection", id: collection! }
+      : { kind: "all" };
 
   return (
     <main>
@@ -51,7 +51,8 @@ export default async function ProductsPage({
       <Catalogue
         products={products}
         categories={categories}
-        initialCategory={initialCategory}
+        collections={collections}
+        initialFilter={initialFilter}
       />
     </main>
   );

@@ -52,12 +52,22 @@ export default async function ProductPage(props: PageProps<"/products/[id]">) {
             <CaretLeft size={13} weight="bold" />
             The whole shelf
           </Link>
-          <Link
-            href={`/products?category=${product.category}`}
-            className="banner text-[0.76rem] uppercase leading-none underline decoration-[3px] underline-offset-[6px]"
-          >
-            {product.categoryLabel}
-          </Link>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link
+              href={`/products?category=${product.category}`}
+              className="banner text-[0.76rem] uppercase leading-none underline decoration-[3px] underline-offset-[6px]"
+            >
+              {product.categoryLabel}
+            </Link>
+            {product.collection && (
+              <Link
+                href={`/products?collection=${product.collection}`}
+                className="banner text-[0.76rem] uppercase leading-none underline decoration-[3px] underline-offset-[6px]"
+              >
+                {product.collectionLabel}
+              </Link>
+            )}
+          </div>
         </div>
         <Chevron />
       </section>
@@ -90,7 +100,7 @@ export default async function ProductPage(props: PageProps<"/products/[id]">) {
             </p>
             <p>
               Instagram, WhatsApp, or Facebook, whichever you already use. Send
-              the name of the piece and the size you want.
+              the name of the piece and the options you want.
             </p>
           </div>
         </div>

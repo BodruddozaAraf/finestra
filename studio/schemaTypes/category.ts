@@ -2,8 +2,10 @@ import {defineField, defineType} from 'sanity'
 import {FolderIcon} from '@sanity/icons/Folder'
 
 /**
- * A product category: Rings, Bracelets, Pendants, Anime, and whatever the shop
- * adds next (wallets, belts). Each category becomes a filter on the shelf.
+ * A product category: what the piece is. Rings, Bracelets, Pendants, Key Rings,
+ * and whatever the shop adds next (wallets, belts). Each category becomes a
+ * filter on the shelf. Lines that cut across categories, such as Anime, are
+ * collections instead (collection.ts).
  *
  * A category that products still point to cannot be deleted; Sanity refuses
  * until those products are moved or deleted first.

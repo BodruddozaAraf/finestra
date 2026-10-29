@@ -1,7 +1,7 @@
 /**
  * The site's one door into Sanity. Server only.
  *
- * Every product and category on the site is read through getCatalogue(). It asks
+ * Every product, category, and collection on the site is read through getCatalogue(). It asks
  * Sanity's HTTP query API with a plain fetch, which Next caches under the
  * SANITY_TAG tag. The Studio's publish webhook (app/api/revalidate) expires that
  * tag, so a change the shop publishes reaches the site on the next visit
@@ -13,7 +13,13 @@
 
 import { cache } from "react";
 import { createImageUrlBuilder } from "@sanity/image-url";
-import type { CategoryInfo, Photo, Product } from "./catalogue";
+import type {
+  CategoryInfo,
+  CollectionInfo,
+  OptionGroup,
+  Photo,
+  Product,
+} from "./catalogue";
 
 const projectId = process.env.SANITY_PROJECT_ID ?? "";
 const dataset = process.env.SANITY_DATASET || "production";
@@ -70,12 +76,18 @@ function photo(image: SanityImage): Photo {
 }
 
 /**
- * Categories in shelf order, and products newest first. Products missing a
+ * Categories and collections in shelf order, and products newest first. Products missing a
  * slug, a category, or a photo are skipped rather than rendered half-built; the Studio's validation should
  * stop those being published in the first place.
  */
 const CATALOGUE_QUERY = `{
   "categories": *[_type == "category" && defined(slug.current)]
+    | order(coalesce(order, 999) asc, label asc) {
+      "id": slug.current,
+      label,
+      "note": coalesce(note, "")
+    },
+  "collections": *[_type == "collection" && defined(slug.current)]
     | order(coalesce(order, 999) asc, label asc) {
       "id": slug.current,
       label,
@@ -88,11 +100,19 @@ const CATALOGUE_QUERY = `{
       name,
       "category": category->slug.current,
       "categoryLabel": category->label,
+      "collection": collection->slug.current,
+      "collectionLabel": collection->label,
       price,
       "material": coalesce(material, ""),
       "story": coalesce(story, ""),
-      "variantLabel": coalesce(variantLabel, ""),
-      "variants": coalesce(variants, []),
+      "options": coalesce(optionGroups[count(values) > 0] {
+        label,
+        "values": values[] {
+          label,
+          "image": select(defined(image.asset) => image),
+          "soldOut": soldOut == true
+        }
+      }, []),
       "soldOut": soldOut == true,
       "onShelf": onShelf == true,
       mainImage,
@@ -100,16 +120,46 @@ const CATALOGUE_QUERY = `{
     }
 }`;
 
-type RawProduct = Omit<Product, "image" | "frames"> & {
+type RawOptionGroup = {
+  label: string;
+  values: { label: string; image: SanityImage | null; soldOut: boolean }[];
+};
+
+/**
+ * GROQ answers null for a missing reference, where the site's types want the
+ * key left out.
+ */
+type RawProduct = Omit<
+  Product,
+  "image" | "frames" | "options" | "collection" | "collectionLabel"
+> & {
+  collection: string | null;
+  collectionLabel: string | null;
   mainImage: SanityImage;
   frames: SanityImage[];
+  options: RawOptionGroup[];
 };
+
+const options = (groups: RawOptionGroup[]): OptionGroup[] =>
+  groups.map((g) => ({
+    label: g.label,
+    values: g.values.map((v) => ({
+      label: v.label,
+      soldOut: v.soldOut,
+      ...(v.image ? { image: photo(v.image) } : {}),
+    })),
+  }));
 
 /** One request per render, however many components ask. */
 export const getCatalogue = cache(
-  async (): Promise<{ categories: CategoryInfo[]; products: Product[] }> => {
-    const { categories, products } = await query<{
+  async (): Promise<{
+    categories: CategoryInfo[];
+    collections: CollectionInfo[];
+    products: Product[];
+  }> => {
+    const { categories, collections, products } = await query<{
       categories: CategoryInfo[];
+      collections: CollectionInfo[];
       products: RawProduct[];
     }>(CATALOGUE_QUERY);
 
@@ -118,11 +168,18 @@ export const getCatalogue = cache(
       categories: categories.filter((c) =>
         products.some((p) => p.category === c.id),
       ),
-      products: products.map(({ mainImage, frames, ...rest }) => ({
-        ...rest,
-        image: photo(mainImage),
-        frames: frames.map(photo),
-      })),
+      collections: collections.filter((c) =>
+        products.some((p) => p.collection === c.id),
+      ),
+      products: products.map(
+        ({ mainImage, frames, options: groups, collection, collectionLabel, ...rest }) => ({
+          ...rest,
+          ...(collection && collectionLabel ? { collection, collectionLabel } : {}),
+          image: photo(mainImage),
+          frames: frames.map(photo),
+          options: options(groups),
+        }),
+      ),
     };
   },
 );

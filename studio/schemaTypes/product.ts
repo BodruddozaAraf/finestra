@@ -22,6 +22,78 @@ const altField = defineField({
   validation: (rule) => rule.required().error('Add a short description of the photo.'),
 })
 
+/**
+ * One choice within a group, e.g. "Black" under Colour. A photo is worth
+ * adding when the choice changes how the product looks; sizes rarely need one.
+ */
+export const optionValue = defineType({
+  name: 'optionValue',
+  title: 'Option',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'label',
+      title: 'Name',
+      type: 'string',
+      description: 'e.g. Black, 19mm, 28 inch chain.',
+      validation: (rule) => rule.required().max(30),
+    }),
+    defineField({
+      name: 'image',
+      title: 'Photo',
+      type: 'image',
+      description: 'Optional. The product in this option, e.g. the black version.',
+      options: {hotspot: true},
+      fields: [altField],
+    }),
+    defineField({
+      name: 'soldOut',
+      title: 'Sold out',
+      type: 'boolean',
+      description: 'Only this option. The rest stay available.',
+      initialValue: false,
+    }),
+  ],
+  preview: {
+    select: {title: 'label', soldOut: 'soldOut', media: 'image'},
+    prepare: ({title, soldOut, media}) => ({
+      title,
+      subtitle: soldOut ? 'Sold out' : undefined,
+      media,
+    }),
+  },
+})
+
+/** A named set of choices, e.g. Colour: Silver, Black. */
+export const optionGroup = defineType({
+  name: 'optionGroup',
+  title: 'Option group',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'label',
+      title: 'What the options are called',
+      type: 'string',
+      description: 'e.g. Colour, Size, Chain.',
+      validation: (rule) => rule.required().max(20),
+    }),
+    defineField({
+      name: 'values',
+      title: 'Options',
+      type: 'array',
+      of: [defineArrayMember({type: 'optionValue'})],
+      validation: (rule) => rule.required().min(1),
+    }),
+  ],
+  preview: {
+    select: {title: 'label', values: 'values'},
+    prepare: ({title, values}) => ({
+      title,
+      subtitle: ((values ?? []) as {label?: string}[]).map((v) => v.label).join(', '),
+    }),
+  },
+})
+
 export const product = defineType({
   name: 'product',
   title: 'Product',
@@ -58,6 +130,15 @@ export const product = defineType({
       to: [{type: 'category'}],
       options: {disableNew: true},
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'collection',
+      title: 'Collection',
+      type: 'reference',
+      group: 'basics',
+      to: [{type: 'collection'}],
+      description: 'Optional. e.g. Anime. Leave empty for classic pieces.',
+      options: {disableNew: true},
     }),
     defineField({
       name: 'price',
@@ -129,23 +210,14 @@ export const product = defineType({
       validation: (rule) => rule.required().max(240),
     }),
     defineField({
-      name: 'variantLabel',
-      title: 'What the options are called',
-      type: 'string',
-      group: 'details',
-      description: 'e.g. Size, Length, Cord, Finish.',
-      initialValue: 'Size',
-      validation: (rule) => rule.required().max(20),
-    }),
-    defineField({
-      name: 'variants',
+      name: 'optionGroups',
       title: 'Options',
       type: 'array',
       group: 'details',
-      description: 'One per entry, e.g. 18mm, 19mm, 20mm. Type one and press Enter.',
-      of: [defineArrayMember({type: 'string'})],
-      options: {layout: 'tags'},
-      validation: (rule) => rule.required().min(1),
+      description:
+        'What the product comes in, e.g. Colour and Size. Up to two. Leave empty for one-size or adjustable pieces.',
+      of: [defineArrayMember({type: 'optionGroup'})],
+      validation: (rule) => rule.max(2),
     }),
   ],
   orderings: [
@@ -157,12 +229,17 @@ export const product = defineType({
     select: {
       name: 'name',
       category: 'category.label',
+      collection: 'collection.label',
       price: 'price',
       soldOut: 'soldOut',
       media: 'mainImage',
     },
-    prepare({name, category, price, soldOut, media}) {
-      const bits = [category, price ? `৳ ${Number(price).toLocaleString('en-US')}` : null]
+    prepare({name, category, collection, price, soldOut, media}) {
+      const bits = [
+        category,
+        collection,
+        price ? `৳ ${Number(price).toLocaleString('en-US')}` : null,
+      ]
       if (soldOut) bits.push('Sold out')
       return {title: name, subtitle: bits.filter(Boolean).join(' · '), media}
     },

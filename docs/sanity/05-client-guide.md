@@ -2,7 +2,7 @@
 
 *A guide for the Finestra team. No technical knowledge needed.*
 
-Everything on the website's shop pages (names, prices, photos, sizes) is
+Everything on the website's shop pages (names, prices, photos, options) is
 managed in one place: the **Finestra Studio**.
 
 ## Getting in
@@ -18,8 +18,13 @@ There's nothing to install and no password to share.
 On the left:
 
 - **Products**: every product, newest first.
-- **Products by category**: the same products, grouped into Rings, Bracelets, Pendants, Anime, and any categories you add.
-- **Categories**: the groups themselves.
+- **Products by category**: the same products, grouped into Rings, Bracelets, Pendants, Key Rings, and any categories you add.
+- **Products by collection**: the same products, grouped by collection, e.g. everything in Anime.
+- **Categories** and **Collections**: the groups themselves.
+
+A **category** is what the piece is: a ring, a bracelet, a key ring. A
+**collection** is a line that runs across them: an anime ring is in Rings
+*and* in the Anime collection. Classic pieces have no collection.
 
 Tap a product to open it. Its details are split into three tabs: **Basics**,
 **Photos**, and **Details**.
@@ -29,6 +34,7 @@ Tap a product to open it. Its details are split into three tabs: **Basics**,
 1. Go to **Products by category**, choose the category, and tap **+** (the category is filled in for you). Or go to **Products** and tap **+**.
 2. **Basics**
    - **Name**, e.g. Kalighat Signet.
+   - **Collection** (optional): e.g. Anime. Leave it empty for classic pieces.
    - **Web address**: tap **Generate**.
    - **Price (Taka)**: numbers only, e.g. 1450.
    - **Main photo**: drag a photo in, or tap to choose one. Square photos look best.
@@ -37,8 +43,8 @@ Tap a product to open it. Its details are split into three tabs: **Basics**,
 4. **Details**
    - **Material**, e.g. 925 silver.
    - **Story**: a sentence or two about the product.
-   - **What the options are called**, e.g. Size, Length, Cord.
-   - **Options**: type one (e.g. 18mm), press Enter, then the next.
+   - **Options**: tap **Add item** to add a group, e.g. **Colour** or **Size**, then add its choices one by one (Silver, Black; or 8, 9, 10). A product can have up to two groups. Leave Options empty for one-size or adjustable pieces.
+   - On a choice that changes how the product looks, such as a colour, add a **Photo**. On the website, tapping that choice shows its photo.
 5. Tap **Publish** (bottom right).
 
 The product appears on the website within a few seconds, at the front of the shelf.
@@ -55,6 +61,13 @@ are a **draft**: you can see them, but the website doesn't.
 
 Open it, switch on **Sold out**, and tap **Publish**. It stays on the website
 with a "Sold out" band across the photo. Switch it off when it's back.
+
+### Only one option is sold out
+
+If the black version has run out but the silver hasn't, open the product, go
+to **Details** → **Options**, open **Black**, switch on its **Sold out**, and
+tap **Publish**. On the website, Black is struck through and the rest stays
+available. Switch it off when it's restocked.
 
 ## Put a product on the homepage
 
@@ -100,6 +113,15 @@ published.
 
 A category can't be deleted while products still belong to it. Move or delete
 those products first.
+
+## Add a new collection
+
+Go to **Collections** → **+** → fill in **Name**, tap **Generate** for the web
+address, add a **Short note**, and set a **Position** → **Publish**. Then set
+the **Collection** on each product that belongs to it.
+
+Like a category, a collection shows on the website once at least one product
+in it is published, and can't be deleted while products still belong to it.
 
 ## Good to know
 

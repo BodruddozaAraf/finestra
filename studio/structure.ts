@@ -1,5 +1,6 @@
 import type {StructureResolver} from 'sanity/structure'
 import {FolderIcon} from '@sanity/icons/Folder'
+import {SparkleIcon} from '@sanity/icons/Sparkle'
 import {TagIcon} from '@sanity/icons/Tag'
 import {API_VERSION} from './env'
 
@@ -7,7 +8,8 @@ const NEWEST_FIRST = [{field: '_createdAt', direction: 'desc' as const}]
 
 /**
  * The Studio's left-hand menu, in the shop's words: every product, the same
- * products split by category, then the categories themselves.
+ * products split by category and by collection, then the categories and
+ * collections themselves.
  */
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -37,6 +39,24 @@ export const structure: StructureResolver = (S) =>
                 ]),
             ),
         ),
+      S.listItem()
+        .title('Products by collection')
+        .icon(SparkleIcon)
+        .child(
+          S.documentTypeList('collection')
+            .title('Products by collection')
+            .defaultOrdering([{field: 'order', direction: 'asc'}])
+            .child((collectionId) =>
+              S.documentList()
+                .title('Products')
+                .schemaType('product')
+                .apiVersion(API_VERSION)
+                .filter('_type == "product" && collection._ref == $collectionId')
+                .params({collectionId})
+                .defaultOrdering(NEWEST_FIRST),
+            ),
+        ),
       S.divider(),
       S.documentTypeListItem('category').title('Categories').icon(FolderIcon),
+      S.documentTypeListItem('collection').title('Collections').icon(SparkleIcon),
     ])
