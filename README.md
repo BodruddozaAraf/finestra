@@ -1,5 +1,7 @@
 # Finestra
 
+Case study: https://www.bodruddozaaraf.me/work/finestra
+
 Online storefront prototype for Finestra Bangladesh, a men's accessories and
 lifestyle brand. Next.js App Router, TypeScript, Tailwind CSS v4.
 
