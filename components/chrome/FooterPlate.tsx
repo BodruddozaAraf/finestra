@@ -52,8 +52,21 @@ export function FooterPlate() {
         </div>
       </div>
 
-      <div className="border-t-[3px] border-[var(--color-ink)] px-4 py-4 text-[0.78rem] sm:px-7">
-        © {new Date().getFullYear()} Finestra Bangladesh
+      <div className="flex flex-wrap justify-between gap-x-6 gap-y-1 border-t-[3px] border-[var(--color-ink)] px-4 py-4 text-[0.78rem] sm:px-7">
+        <p>© {new Date().getFullYear()} Finestra Bangladesh</p>
+        {/* A plain followed link: no nofollow, and no noreferrer, so the
+            visit arrives as a referral. Not OUTBOUND for that reason. */}
+        <p className="opacity-70">
+          Website by{" "}
+          <a
+            href="https://www.bodruddozaaraf.me/work/finestra"
+            target="_blank"
+            rel="noopener"
+            className="underline underline-offset-2"
+          >
+            Bodruddoza Araf
+          </a>
+        </p>
       </div>
     </footer>
   );
